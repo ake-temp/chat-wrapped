@@ -1,24 +1,17 @@
 (ns server)
 
-(def server
-  (.serve js/Bun
-    #js {:port 3000
-         :fetch (fn [req]
-                  (let [url (js/URL. (.-url req))
-                        pathname (.-pathname url)]
-                    (cond
-                      (= pathname "/")
-                      (js/Response. (.file js/Bun "public/index.html"))
+(defn file [path content-type]
+  (js/Response. (.file js/Bun path) {:headers {"Content-Type" content-type}}))
 
-                      (= pathname "/app.js")
-                      (js/Response. (.file js/Bun "app.js")
-                                    #js {:headers #js {"Content-Type" "application/javascript"}})
+(defn handler [req]
+  (let [url (js/URL. (.-url req))
+        pathname (.-pathname url)]
+    (condp re-matches pathname
+      #"/" (file "public/index.html" "text/html")
+      #"/app\.js" (file "app.js" "application/javascript")
+      #"/node_modules/.*" (file (str ".." pathname) "application/javascript")
+      (js/Response. "Not Found" #js {:status 404}))))
 
-                      (.startsWith pathname "/node_modules/")
-                      (js/Response. (.file js/Bun (str ".." pathname))
-                                    #js {:headers #js {"Content-Type" "application/javascript"}})
-
-                      :else
-                      (js/Response. "Not Found" #js {:status 404}))))}))
+(def server (.serve js/Bun {:port 3000 :fetch handler}))
 
 (.log js/console (str "Server running at http://localhost:" (.-port server)))
