@@ -26,7 +26,7 @@
     (js-yield (event "Hello World!"))
     (loop [i start]
       (js/await (Bun.sleep 1000))
-      (js-yield (event {:data (str i) :id (str i)}))
+      (js-yield (event {:event "counter" :data (str i) :id (str i)}))
       (recur (inc i)))))
 
 (defn handler [req]

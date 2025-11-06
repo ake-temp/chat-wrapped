@@ -21,12 +21,11 @@
    (.addEventListener event-source event f)))
 
 (let [event-source (js/EventSource. "/api/sse")]
-  (listen event-source "message"
-          (fn [{:keys [data]}]
-            (js/console.log "Received event via listen:" data)
-            (let [counter (js/parseInt data)]
-              (when (not (js/isNaN counter))
-                (swap! state assoc :counter counter))))))
+  (listen event-source "message" #(js/console.log "Message event:" %))
+  (listen event-source "counter"
+    (fn [{:keys [data] :as event}]
+      (js/console.log "Counter event:" event)
+      (swap! state assoc :counter (js/parseInt data)))))
 
 
 
