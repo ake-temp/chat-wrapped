@@ -1,0 +1,3 @@
+{:paths ["src/cljs" "src/clj"]
+ :extension "js"
+ :output-dir "target"}

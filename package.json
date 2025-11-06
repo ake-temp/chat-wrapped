@@ -1,0 +1,14 @@
+{
+  "name": "christmas-talk",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run build && cd target && bun run server.js",
+    "build": "squint compile && cp -r public target/",
+    "watch": "squint watch",
+    "clean": "rm -rf target"
+  },
+  "dependencies": {
+    "squint-cljs": "^0.8.134"
+  }
+}
