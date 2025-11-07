@@ -1,18 +1,27 @@
 (ns app
-  (:require ["https://esm.sh/reagami" :as reagami]))
+  (:require ["https://esm.sh/reagami" :as reagami]
+            ["./entry.css"]))
 
 
 ;; >> App
 
 (def state (atom {:counter 0}))
 
+(defn button [& body]
+  (let [[attrs children] (if (map? (first body))
+                           [(first body) (rest body)]
+                           [nil body])]
+    [:button (merge {:class "px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800"}
+                    attrs)
+     children]))
+
 (defn app []
   (let [{:keys [counter]} @state]
     [:div
      [:h1 "Counter: " counter]
-     [:button {:on-click #(js/fetch "/api/counter/inc")}
+     [button {:on-click #(js/fetch "/api/counter/inc")}
       "Increment"]
-     [:button {:on-click #(js/fetch "/api/counter/dec")}
+     [button {:on-click #(js/fetch "/api/counter/dec")}
       "Decrement"]]))
 
 

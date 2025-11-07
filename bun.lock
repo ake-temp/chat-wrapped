@@ -6,6 +6,9 @@
       "dependencies": {
         "squint-cljs": "^0.8.134",
       },
+      "devDependencies": {
+        "tailwindcss": "^4.1.17",
+      },
     },
   },
   "packages": {
@@ -14,5 +17,7 @@
     "readdirp": ["readdirp@4.1.2", "", {}, "sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg=="],
 
     "squint-cljs": ["squint-cljs@0.8.159", "", { "dependencies": { "chokidar": "^4.0.1" }, "bin": { "squint": "node_cli.js" } }, "sha512-tSo9DfzjNvcCjNWk9/N+j0BBJdF56n/LNYfQcuDrEiogGbGDHRBnGW1PGlIH3kTDTmUdT8aaS/5tdLUaCGD+pg=="],
+
+    "tailwindcss": ["tailwindcss@4.1.17", "", {}, "sha512-j9Ee2YjuQqYT9bbRTfTZht9W/ytp5H+jJpZKiYdP/bpnXARAuELt9ofP0lPnmHjbga7SNQIxdTAXCmtKVYjN+Q=="],
   }
 }
