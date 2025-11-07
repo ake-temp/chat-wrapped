@@ -66,6 +66,4 @@
           (js/Response. "OK" {:status 200}))
       (js/Response. "Not Found" {:status 404}))))
 
-(def server (.serve js/Bun {:port 3000 :idleTimeout 40 :fetch handler}))
-
-(.log js/console (str "Server running at http://localhost:" (.-port server)))
+(def default {:port 3000 :idleTimeout 40 :fetch handler})
