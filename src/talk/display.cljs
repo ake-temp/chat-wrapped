@@ -10,6 +10,8 @@
                   :votes {}  ;; {client-id -> vote}
                   :audience-count 0}))
 
+
+
 ;; >> Vote Processing
 
 (defn process-vote [vote]
@@ -18,6 +20,8 @@
     ;; Only process votes for the active question
     (when (= question-id (:id (:active-question @state)))
       (swap! state assoc-in [:votes client-id] vote))))
+
+
 
 ;; >> Aggregation
 
@@ -37,6 +41,8 @@
 
 (defn text-responses []
   (map :value (get-votes)))
+
+
 
 ;; >> UI Components
 
@@ -122,6 +128,8 @@
       [question-results-ui q]]
      [slide-ui])
    [connection-pill]])
+
+
 
 ;; >> Init
 

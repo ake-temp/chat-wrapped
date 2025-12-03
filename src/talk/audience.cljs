@@ -10,6 +10,8 @@
 
 (def CHANNEL "audience")
 
+
+
 ;; >> Voting
 
 (defn submit-vote! [value]
@@ -20,6 +22,8 @@
                                     :question-id (:id q)
                                     :value value
                                     :timestamp (js/Date.now)})))
+
+
 
 ;; >> UI Components
 
@@ -96,6 +100,8 @@
      [question-ui q]
      [waiting-ui])
    [connection-pill]])
+
+
 
 ;; >> Init
 

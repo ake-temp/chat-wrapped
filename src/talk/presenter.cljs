@@ -20,6 +20,8 @@
 
 (def state (atom (merge default-state (load-state))))
 
+
+
 ;; >> Questions Data
 
 (def questions
@@ -37,6 +39,8 @@
 
 (def CHANNEL "presenter")
 
+
+
 ;; >> Presence Helpers
 
 (defn get-state [callback]
@@ -53,6 +57,8 @@
   (save-state!)
   (ably/update-presence! CHANNEL {:slide-index (:slide-index @state)
                                    :active-question (:active-question @state)}))
+
+
 
 ;; >> Control Actions
 
@@ -76,6 +82,8 @@
   (js/localStorage.removeItem "presenter-state")
   (swap! state merge {:slide-index 0 :active-question nil})
   (sync-state!))
+
+
 
 ;; >> UI Components
 
@@ -129,6 +137,8 @@
        "Reset"]]
 
      [connection-pill]]))
+
+
 
 ;; >> Init
 
