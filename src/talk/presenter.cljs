@@ -57,16 +57,19 @@
 ;; >> State
 
 (def default-state {:slide-id (first slide-ids)
-                    :audience-count 0})
+                    :audience-count 0
+                    :selected-speaker nil
+                    :audience-members []})
 
 (defn save-state! []
   (js/localStorage.setItem "presenter-state"
-    (js/JSON.stringify (select-keys @state [:slide-id]))))
+    (js/JSON.stringify (select-keys @state [:slide-id :selected-speaker]))))
 
 (defn load-state []
   (when-let [saved (js/localStorage.getItem "presenter-state")]
     (let [parsed (js/JSON.parse saved)]
-      {:slide-id (or (:slide-id parsed) (first slide-ids))})))
+      {:slide-id (or (:slide-id parsed) (first slide-ids))
+       :selected-speaker (:selected-speaker parsed)})))
 
 (def state (atom (merge default-state (load-state))))
 
@@ -88,7 +91,27 @@
 
 (defn sync-state! []
   (save-state!)
-  (ably/update-presence! CHANNEL {:slide-id (:slide-id @state)}))
+  (ably/update-presence! CHANNEL {:slide-id (:slide-id @state)
+                                   :selected-speaker (:selected-speaker @state)}))
+
+
+
+;; >> Speaker Selection
+
+(defn select-random-speaker! []
+  (let [members (:audience-members @state)]
+    (when (seq members)
+      (let [speaker (rand-nth members)]
+        (swap! state assoc :selected-speaker speaker)
+        (sync-state!)))))
+
+(defn clear-speaker-messages! []
+  (ably/publish! "speaker" "message" {:command "clear"}))
+
+(defn speaker-present? []
+  (let [speaker (:selected-speaker @state)
+        members (:audience-members @state)]
+    (and speaker (some #(= % speaker) members))))
 
 
 
@@ -137,10 +160,35 @@
              :disabled disabled?}
      slide-id]))
 
+(defn speaker-selection-ui [disabled?]
+  (let [speaker (:selected-speaker @state)
+        present? (speaker-present?)]
+    [:div {:class "p-3 bg-purple-900/50 border border-purple-700 rounded-lg space-y-2"}
+     [:h2 {:class "text-sm font-semibold text-purple-400"} "Selected Speaker"]
+     (if speaker
+       [:div {:class "flex items-center gap-2"}
+        [:span {:class (if present? "text-green-400" "text-red-400")} "●"]
+        [:span {:class "font-mono text-sm truncate flex-1"} speaker]
+        [:span {:class "text-xs text-gray-400"} (if present? "online" "offline")]]
+       [:div {:class "text-gray-400 text-sm"} "No speaker selected"])
+     [:div {:class "flex gap-2"}
+      [button {:on-click select-random-speaker!
+               :disabled disabled?
+               :class "px-3 py-1 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 disabled:bg-gray-600"}
+       (if speaker "Re-roll" "Select Random")]
+      [button {:on-click clear-speaker-messages!
+               :disabled disabled?
+               :class "px-3 py-1 bg-gray-600 text-white text-sm rounded-lg hover:bg-gray-500 disabled:bg-gray-700"}
+       "Clear Messages"]]]))
+
 (defn presenter-ui []
   (let [disabled? (not (ably/connected?))
         current-slide (:slide-id @state)
-        idx (current-slide-index)]
+        idx (current-slide-index)
+        on-q3? (= current-slide "q3")]
+    ;; Auto-select speaker when entering q3 if none selected
+    (when (and on-q3? (not (:selected-speaker @state)) (seq (:audience-members @state)))
+      (select-random-speaker!))
     [:div {:class "min-h-screen bg-gray-900 text-white"}
      [:div {:class "p-4 space-y-6 max-w-md mx-auto"}
       [:h1 {:class "text-2xl font-bold"} "Presenter Controls"]
@@ -155,6 +203,9 @@
         [button {:on-click next-slide! :disabled disabled?} "Next"]
         [:span {:class "px-4 py-2 font-mono text-lg"} current-slide]
         [:span {:class "text-gray-400"} "(" (inc idx) "/" (count slide-ids) ")"]]]
+
+      (when on-q3?
+        [speaker-selection-ui disabled?])
 
       (when-let [slide-notes (get notes current-slide)]
         [:div {:class "p-3 bg-yellow-900/50 border border-yellow-700 rounded-lg"}
@@ -198,9 +249,12 @@
   ;; Enter presenter presence with initial state
   (ably/enter-presence! CHANNEL {:slide-id (:slide-id @state)})
 
-  ;; Watch audience count
+  ;; Watch audience members
   (ably/on-presence-change! "audience"
     (fn []
       (ably/get-presence-members "audience"
         (fn [members]
-          (swap! state assoc :audience-count (count members)))))))
+          (let [member-ids (mapv #(.-clientId %) members)]
+            (swap! state assoc
+                   :audience-count (count members)
+                   :audience-members member-ids)))))))

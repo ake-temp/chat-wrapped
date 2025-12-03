@@ -6,12 +6,18 @@
 ;; >> State
 
 (def state (atom {:slide-id nil
-                  :my-votes {}}))  ;; {question-id -> vote-value}
+                  :my-votes {}      ;; {question-id -> vote-value}
+                  :selected-speaker nil
+                  :my-message ""})) ;; speaker message for q3
 
 (def CHANNEL "audience")
+(def SPEAKER-CHANNEL "speaker")
 
 (defn my-vote-for [question-id]
   (get (:my-votes @state) question-id))
+
+(defn i-am-speaker? []
+  (= ably/client-id (:selected-speaker @state)))
 
 
 
@@ -24,6 +30,16 @@
         (js/clearTimeout t))
       (reset! timeout
         (js/setTimeout #(apply f args) delay-ms)))))
+
+
+
+;; >> Speaker Messages
+
+(defn send-speaker-message! [message]
+  (swap! state assoc :my-message message)
+  (ably/publish! SPEAKER-CHANNEL "message" {:client-id ably/client-id
+                                             :message message
+                                             :timestamp (js/Date.now)}))
 
 
 
@@ -129,6 +145,27 @@
       :text [text-voter question-id question]
       [:div "Unknown question type"])))
 
+(defn speaker-message-input []
+  (let [input-id "speaker-message-input"
+        current-message (:my-message @state)]
+    [:div {:class "p-4 bg-purple-900/50 border border-purple-500 rounded-lg space-y-3"}
+     [:div {:class "flex items-center gap-2"}
+      [:span {:class "text-purple-400 text-lg"} "✨"]
+      [:span {:class "text-purple-300 font-semibold"} "You've been selected to share!"]]
+     [:textarea {:id input-id
+                 :class "w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white resize-none focus:border-purple-500 focus:outline-none"
+                 :rows 3
+                 :placeholder "Share your thoughts..."
+                 :default-value current-message}]
+     [button {:class "w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-600"
+              :on-click (fn []
+                          (let [input (js/document.getElementById input-id)
+                                value (.-value input)]
+                            (send-speaker-message! value)))}
+      "Send Message"]
+     (when (seq current-message)
+       [:div {:class "text-xs text-gray-400"} "Your message is live on screen"])]))
+
 (defn waiting-ui []
   [:div {:class "text-center text-gray-400"}
    [:h2 {:class "text-xl"} "Waiting for next question..."]
@@ -142,7 +179,10 @@
   (case slide-id
     "q1" [question-voter "q1"]
     "q2" [question-voter "q2"]
-    "q3" [question-voter "q3"]
+    "q3" [:div {:class "space-y-4"}
+          [question-voter "q3"]
+          (when (i-am-speaker?)
+            [speaker-message-input])]
     "q4" [question-voter "q4"]
     "q5" [question-voter "q5"]
     [waiting-ui]))
@@ -169,10 +209,12 @@
   ;; Enter audience presence (for counting)
   (ably/enter-presence! CHANNEL)
 
-  ;; Watch presenter for current slide
+  ;; Watch presenter for current slide and selected speaker
   (presenter/on-state-change!
     (fn []
       (presenter/get-state
         (fn [presenter-state]
           (when presenter-state
-            (swap! state assoc :slide-id (:slide-id presenter-state))))))))
+            (swap! state assoc
+                   :slide-id (:slide-id presenter-state)
+                   :selected-speaker (:selected-speaker presenter-state))))))))

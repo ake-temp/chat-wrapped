@@ -10,7 +10,8 @@
 
 (def state (atom {:slide-id nil
                   :votes {}  ;; {question-id -> {:latest-vote {client-id -> vote}, :all-votes [vote]}}
-                  :audience-count 0}))
+                  :audience-count 0
+                  :speaker-messages []}))  ;; [{:message "..." :timestamp ...} ...]
 
 
 
@@ -23,6 +24,19 @@
                    (-> s
                        (assoc-in [:votes question-id :latest-vote client-id] vote)
                        (update-in [:votes question-id :all-votes] (fnil conj []) vote))))))
+
+
+
+;; >> Speaker Message Processing
+
+(defn process-speaker-message [msg]
+  (if (= (:command msg) "clear")
+    (swap! state assoc :speaker-messages [])
+    (swap! state update :speaker-messages
+           (fn [msgs]
+             (->> (cons msg msgs)
+                  (take 5)
+                  vec)))))
 
 
 
@@ -113,6 +127,46 @@
   [slide-wrapper
    [:div {:class "text-center"}
     [:h1 {:class "text-5xl font-bold"} "A ground truth exists"]]])
+
+
+
+;; >> Speaker Message Display (tweet-style)
+
+(defn speaker-message-display []
+  (let [messages (:speaker-messages @state)
+        valid-messages (filter #(seq (:message %)) messages)]
+    (when (seq valid-messages)
+      [:div {:class "absolute top-8 right-8 max-w-md space-y-3"}
+       ;; Header card
+       [:div {:class "bg-gray-800 rounded-2xl p-3 shadow-xl border border-gray-700"}
+        [:div {:class "flex items-center gap-3"}
+         [:div {:class "w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-lg"}
+          "🌟"]
+         [:div
+          [:div {:class "font-bold text-white"} "Cool influencer"]
+          [:div {:class "text-gray-400 text-sm"} "Live from the audience"]]]]
+       ;; Messages (progressively fade: 100%, 80%, 60%, 40%, 20%)
+       (for [[idx msg] (map-indexed vector valid-messages)]
+         (let [opacity (- 100 (* idx 20))]
+           ^{:key (:timestamp msg)}
+           [:div {:class "bg-gray-800 rounded-xl p-3 shadow-lg border border-gray-700"
+                  :style {:opacity (/ opacity 100)}}
+            [:div {:class "text-white text-lg leading-relaxed"}
+             (:message msg)]]))])))
+
+
+
+;; >> Q3 Slide with Speaker Message
+
+(defn q3-slide []
+  (let [question (presenter/get-question "q3")
+        responses (response-count "q3")
+        audience (:audience-count @state)]
+    [slide-wrapper
+     [:div {:class "text-center"}
+      [:h1 {:class "text-5xl font-bold mb-8"} (:text question)]
+      [:p {:class "text-2xl text-gray-400"} responses " / " audience " Responses Received"]
+      [speaker-message-display]]]))
 
 
 
@@ -245,7 +299,7 @@
     "q2" [question-slide "q2" persimmon-img]
     "q2-results" [analysis-slide "q2"]
     "independence" [independence-slide]
-    "q3" [question-slide "q3" nil "For this question, show your neighbours' answers as well"]
+    "q3" [q3-slide]
     "q3-results" [analysis-slide "q3"]
     "diversity" [diversity-slide]
     "q4" [question-slide "q4"]
@@ -289,4 +343,7 @@
             (swap! state assoc :slide-id (:slide-id presenter-state)))))))
 
   ;; Subscribe to votes
-  (ably/subscribe! "votes" process-vote))
+  (ably/subscribe! "votes" process-vote)
+
+  ;; Subscribe to speaker messages
+  (ably/subscribe! "speaker" process-speaker-message))
