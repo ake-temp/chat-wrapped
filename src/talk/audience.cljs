@@ -12,6 +12,7 @@
 
 (def CHANNEL "audience")
 (def SPEAKER-CHANNEL "speaker")
+(def REACTIONS-CHANNEL "reactions")
 
 (defn my-vote-for [question-id]
   (get (:my-votes @state) question-id))
@@ -40,6 +41,18 @@
   (ably/publish! SPEAKER-CHANNEL "message" {:client-id ably/client-id
                                              :message message
                                              :timestamp (js/Date.now)}))
+
+
+
+;; >> Emoji Reactions
+
+(def send-reaction!
+  (debounce
+    (fn [emoji]
+      (ably/publish! REACTIONS-CHANNEL "reaction" {:emoji emoji
+                                                    :id (str (random-uuid))
+                                                    :timestamp (js/Date.now)}))
+    200))
 
 
 
@@ -168,10 +181,22 @@
      (when (seq current-message)
        [:div {:class "text-xs text-gray-400"} "Your message is live on screen"])]))
 
+(def reaction-emojis ["❤️" "👍" "😮" "🧠"])
+
+(defn emoji-button [emoji]
+  [:button {:class "text-4xl p-3 hover:scale-125 transition-transform active:scale-90"
+            :on-click #(send-reaction! emoji)}
+   emoji])
+
 (defn waiting-ui []
-  [:div {:class "text-center text-gray-400"}
-   [:h2 {:class "text-xl"} "Waiting for next question..."]
-   [:p "The presenter will activate a question soon."]])
+  [:div {:class "text-center text-gray-400 space-y-8"}
+   [:div
+    [:h2 {:class "text-xl"} "Waiting for next question..."]
+    [:p "The presenter will activate a question soon."]]
+   [:div {:class "flex justify-center gap-4"}
+    (for [emoji reaction-emojis]
+      ^{:key emoji}
+      [emoji-button emoji])]])
 
 
 

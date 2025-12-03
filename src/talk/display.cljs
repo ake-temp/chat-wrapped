@@ -12,7 +12,8 @@
 (def state (atom {:slide-id nil
                   :votes {}  ;; {question-id -> {:latest-vote {client-id -> vote}, :all-votes [vote]}}
                   :audience-count 0
-                  :speaker-messages []}))  ;; [{:message "..." :timestamp ...} ...]
+                  :speaker-messages []     ;; [{:message "..." :timestamp ...} ...]
+                  :reactions []}))         ;; [{:emoji :id :x :created-at} ...]
 
 
 
@@ -38,6 +39,29 @@
              (->> (cons msg msgs)
                   (take 5)
                   vec)))))
+
+
+
+;; >> Reaction Processing
+
+(def MAX-REACTIONS 100)
+(def REACTION-LIFETIME 4000) ;; ms
+
+(defn process-reaction [reaction]
+  (let [x (+ 10 (rand-int 80))  ;; random x position 10-90%
+        new-reaction (assoc reaction :x x :created-at (js/Date.now))]
+    (swap! state update :reactions
+           (fn [reactions]
+             (->> (conj reactions new-reaction)
+                  (take-last MAX-REACTIONS)
+                  vec)))))
+
+(defn cleanup-old-reactions! []
+  (let [now (js/Date.now)
+        cutoff (- now REACTION-LIFETIME)]
+    (swap! state update :reactions
+           (fn [reactions]
+             (filterv #(> (:created-at %) cutoff) reactions)))))
 
 
 
@@ -82,6 +106,38 @@
                  (conj results {:timestamp timestamp
                                 :average new-avg
                                 :count (count new-client-votes)})))))))
+
+
+
+;; >> Floating Reactions Layer
+
+(defn floating-emoji [{:keys [emoji x id created-at]}]
+  (let [age-ms (- (js/Date.now) created-at)
+        ;; Negative delay "fast forwards" the animation to the right point
+        delay-s (/ (- age-ms) 1000)]
+    [:div {:key id
+           :class "absolute text-5xl pointer-events-none animate-float-up"
+           :style {:left (str x "%")
+                   :bottom "0%"
+                   :transform "translateX(-50%)"
+                   :animation-delay (str delay-s "s")}}
+     emoji]))
+
+(defn reactions-layer []
+  (let [reactions (:reactions @state)]
+    [:div {:class "fixed inset-0 overflow-hidden pointer-events-none z-50"}
+     [:style "
+       @keyframes float-up {
+         0% { bottom: 0%; opacity: 1; }
+         100% { bottom: 100%; opacity: 0; }
+       }
+       .animate-float-up {
+         animation: float-up 4s linear forwards;
+       }
+     "]
+     (for [reaction reactions]
+       ^{:key (:id reaction)}
+       [floating-emoji reaction])]))
 
 
 
@@ -420,10 +476,12 @@
 
 (defn display-ui []
   (let [slide-id (:slide-id @state)]
-    (if slide-id
-      [render-slide slide-id]
-      [slide-wrapper
-       [:div {:class "text-2xl text-gray-500"} "Waiting for presenter..."]])))
+    [:div {:class "relative"}
+     (if slide-id
+       [render-slide slide-id]
+       [slide-wrapper
+        [:div {:class "text-2xl text-gray-500"} "Waiting for presenter..."]])
+     [reactions-layer]]))
 
 
 
@@ -455,4 +513,10 @@
   (ably/subscribe! "votes" process-vote)
 
   ;; Subscribe to speaker messages
-  (ably/subscribe! "speaker" process-speaker-message))
+  (ably/subscribe! "speaker" process-speaker-message)
+
+  ;; Subscribe to reactions
+  (ably/subscribe! "reactions" process-reaction)
+
+  ;; Cleanup old reactions periodically (just to free memory)
+  (js/setInterval cleanup-old-reactions! 5000))
