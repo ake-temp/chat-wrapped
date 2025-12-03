@@ -5,10 +5,20 @@
 
 ;; >> State
 
-(def state (atom {:slide-id nil
-                  :my-votes {}      ;; {question-id -> vote-value}
-                  :selected-speaker nil
-                  :my-message ""})) ;; speaker message for q3
+(def default-state {:slide-id nil
+                    :my-votes {}      ;; {question-id -> vote-value}
+                    :selected-speaker nil
+                    :my-message ""})
+
+(defn save-state! []
+  (js/localStorage.setItem "audience-state"
+    (js/JSON.stringify (select-keys @state [:my-votes]))))
+
+(defn load-state []
+  (when-let [saved (js/localStorage.getItem "audience-state")]
+    (js/JSON.parse saved)))
+
+(def state (atom (merge default-state (load-state))))
 
 (def CHANNEL "audience")
 (def SPEAKER-CHANNEL "speaker")
@@ -70,6 +80,7 @@
 (defn submit-vote! [question-id value]
   ;; Update local state immediately for responsiveness
   (swap! state assoc-in [:my-votes question-id] value)
+  (save-state!)
   ;; Debounced publish to Ably
   (publish-vote! question-id value))
 

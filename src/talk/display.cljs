@@ -9,11 +9,21 @@
 
 ;; >> State
 
-(def state (atom {:slide-id nil
-                  :votes {}  ;; {question-id -> {:latest-vote {client-id -> vote}, :all-votes [vote]}}
-                  :audience-count 0
-                  :speaker-messages []     ;; [{:message "..." :timestamp ...} ...]
-                  :reactions []}))         ;; [{:emoji :id :x :created-at} ...]
+(def default-state {:slide-id nil
+                    :votes {}  ;; {question-id -> {:latest-vote {client-id -> vote}, :all-votes [vote]}}
+                    :audience-count 0
+                    :speaker-messages []
+                    :reactions []})
+
+(defn save-state! []
+  (js/localStorage.setItem "display-state"
+    (js/JSON.stringify (select-keys @state [:votes]))))
+
+(defn load-state []
+  (when-let [saved (js/localStorage.getItem "display-state")]
+    (js/JSON.parse saved)))
+
+(def state (atom (merge default-state (load-state))))
 
 
 
@@ -25,7 +35,8 @@
     (swap! state (fn [s]
                    (-> s
                        (assoc-in [:votes question-id :latest-vote client-id] vote)
-                       (update-in [:votes question-id :all-votes] (fnil conj []) vote))))))
+                       (update-in [:votes question-id :all-votes] (fnil conj []) vote))))
+    (save-state!)))
 
 
 
