@@ -99,19 +99,37 @@
    [:div {:class "text-center"}
     [:h1 {:class "text-5xl font-bold"} "First some ground rules"]]])
 
+(defn independence-slide []
+  [slide-wrapper
+   [:div {:class "text-center"}
+    [:h1 {:class "text-5xl font-bold"} "Independence"]]])
+
+(defn diversity-slide []
+  [slide-wrapper
+   [:div {:class "text-center"}
+    [:h1 {:class "text-5xl font-bold"} "Diversity"]]])
+
+(defn ground-truth-slide []
+  [slide-wrapper
+   [:div {:class "text-center"}
+    [:h1 {:class "text-5xl font-bold"} "A ground truth exists"]]])
+
 
 
 ;; >> Question Slide
 
 (defn question-slide
-  ([question-id] (question-slide question-id nil))
-  ([question-id image]
+  ([question-id] (question-slide question-id nil nil))
+  ([question-id image] (question-slide question-id image nil))
+  ([question-id image note]
    (let [question (presenter/get-question question-id)
          responses (response-count question-id)
          audience (:audience-count @state)]
      [slide-wrapper
       [:div {:class "text-center"}
-       [:h1 {:class "text-5xl font-bold mb-8"} (:text question)]
+       [:h1 {:class "text-5xl font-bold mb-4"} (:text question)]
+       (when note
+         [:p {:class "text-2xl text-gray-400 italic mb-8"} note])
        (when image
          [:img {:src image :class "max-h-64 mx-auto mb-8 rounded-lg"}])
        [:p {:class "text-2xl text-gray-400"} responses " / " audience " Responses Received"]]])))
@@ -125,6 +143,8 @@
         min-val (get-in question [:options :min])
         max-val (get-in question [:options :max])
         unit (get-in question [:options :unit])
+        min-label (get-in question [:options :min-label])
+        max-label (get-in question [:options :max-label])
         range-size (- max-val min-val)
         bin-size (or (get-in question [:options :bin-size])
                      (js/Math.ceil (/ (inc range-size) (js/Math.min 10 (inc range-size)))))
@@ -154,7 +174,11 @@
              [:div {:class "bg-blue-500 rounded-t mx-auto"
                     :style {:height (str height "px")}}]
              [:div {:class "text-xs text-gray-400 mt-1 truncate"}
-              (if (= start end) start (str start "-" end))]]))]]
+              (if (= start end) start (str start "-" end))]]))]
+       (when (or min-label max-label)
+         [:div {:class "flex justify-between text-sm text-gray-400 mt-2 px-4"}
+          [:span (or min-label "")]
+          [:span (or max-label "")]])]
       [:div {:class "text-2xl text-gray-500"} "No responses yet"])))
 
 (defn choice-chart [question-id question]
@@ -220,6 +244,15 @@
     "rules" [rules-slide]
     "q2" [question-slide "q2" persimmon-img]
     "q2-results" [analysis-slide "q2"]
+    "independence" [independence-slide]
+    "q3" [question-slide "q3" nil "For this question, show your neighbours' answers as well"]
+    "q3-results" [analysis-slide "q3"]
+    "diversity" [diversity-slide]
+    "q4" [question-slide "q4"]
+    "q4-results" [analysis-slide "q4"]
+    "ground-truth" [ground-truth-slide]
+    "q5" [question-slide "q5"]
+    "q5-results" [analysis-slide "q5"]
     [default-slide slide-id]))
 
 (defn display-ui []

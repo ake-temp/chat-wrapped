@@ -56,7 +56,7 @@
 
 (defn scale-voter [question-id question]
   (let [current-vote (my-vote-for question-id)
-        {:keys [min max unit]} (:options question)
+        {:keys [min max unit min-label max-label]} (:options question)
         value (or current-vote min)
         on-value-change (fn [v]
                           (let [clamped (js/Math.min max (js/Math.max min v))]
@@ -85,8 +85,8 @@
                :on-change #(on-value-change (js/parseInt (.. % -target -value)))}]
       ;; Min/max labels
       [:div {:class "flex justify-between text-sm text-gray-400"}
-       [:span min]
-       [:span max]]]]))
+       [:span (or min-label min)]
+       [:span (or max-label max)]]]]))
 
 (defn choice-voter [question-id question]
   (let [current-vote (my-vote-for question-id)]
@@ -142,6 +142,9 @@
   (case slide-id
     "q1" [question-voter "q1"]
     "q2" [question-voter "q2"]
+    "q3" [question-voter "q3"]
+    "q4" [question-voter "q4"]
+    "q5" [question-voter "q5"]
     [waiting-ui]))
 
 (defn audience-ui []

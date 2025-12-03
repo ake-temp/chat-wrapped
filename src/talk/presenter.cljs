@@ -8,7 +8,10 @@
   ["title"
    "about"
    ["wotc" "q1" "q1-results" "wotc-answer"]
-   ["rules" "q2" "q2-results"]])
+   ["rules" "q2" "q2-results"]
+   ["independence" "q3" "q3-results"]
+   ["diversity" "q4" "q4-results"]
+   ["ground-truth" "q5" "q5-results"]])
 
 (def slide-ids (->> slides
                     (map #(if (string? %) [%] %))
@@ -23,13 +26,29 @@
    "q2" {:id "q2"
          :text "How heavy is this Persimmon (in grams)?"
          :kind :scale
-         :options {:min 1 :max 500 :unit "g" :bin-size 50}}})
+         :options {:min 1 :max 500 :unit "g" :bin-size 50}}
+   "q3" {:id "q3"
+         :text "What year did the first person reach the peak of Mount Everest?"
+         :kind :scale
+         :options {:min 1800 :max 2000 :bin-size 10}}
+   "q4" {:id "q4"
+         :text "What percentage of the world population has internet access?"
+         :kind :scale
+         :options {:min 0 :max 100 :unit "%" :bin-size 10}}
+   "q5" {:id "q5"
+         :text "How ethical is it to train LLMs on public code on GitHub?"
+         :kind :scale
+         :options {:min 0 :max 10 :bin-size 1
+                   :min-label "Not ethical" :max-label "Very ethical"}}})
 
 (def notes
   {"about" ["This is my backup idea..."
             "So let's just have fun"]
    "rules" ["1. No peeking!"
-            "2. That's it"]})
+            "2. That's it"]
+   "independence" ["For errors to cancel out, the errors need to be unbiased"]
+   "diversity" ["Diversity in errors helps reduce overall error"]
+   "ground-truth" ["There needs to obviously be a precise answer to the question"]})
 
 (defn get-question [question-id]
   (get questions question-id))
