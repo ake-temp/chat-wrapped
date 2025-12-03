@@ -1,5 +1,5 @@
 (ns talk.app
-  (:require ["https://esm.sh/reagami" :as reagami]
+  (:require ["reagami" :as reagami]
             ["./entry.css"]
             ["./ably.js" :as ably]
             ["./presenter.js" :as presenter]

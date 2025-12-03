@@ -1,5 +1,5 @@
 (ns talk.ably
-  (:require ["https://esm.sh/ably" :as Ably]))
+  (:require ["ably" :as Ably]))
 
 
 
