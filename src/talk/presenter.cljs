@@ -45,7 +45,8 @@
   {"about" ["This is my backup idea..."
             "So let's just have fun"]
    "rules" ["1. No peeking!"
-            "2. That's it"]
+            "2. Feel free to change your answers as much as you like"
+            "3. That's it"]
    "independence" ["For errors to cancel out, the errors need to be unbiased"]
    "diversity" ["Diversity in errors helps reduce overall error"]
    "ground-truth" ["There needs to obviously be a precise answer to the question"]})
