@@ -1,4 +1,4 @@
-{:paths ["src"]
+{:paths ["src/talk"]
  :extension "js"
- :output-dir "build"
+ :output-dir "build/talk"
  :copy-resources #{:css :html}}

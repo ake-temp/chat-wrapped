@@ -1,6 +1,6 @@
 import tailwindPlugin from 'bun-plugin-tailwind';
 import { parseArgs } from 'util';
-import { watch } from 'fs/promises';
+import { watch, copyFile, mkdir } from 'fs/promises';
 
 const { values, _positionals } = parseArgs({
     args: Bun.argv,
@@ -18,7 +18,7 @@ async function build({entrypoints, outdir, target, plugins}) {
     const build = await Bun.build({
         entrypoints,
         outdir,
-        minify: true,
+        minify: !values.watch,
         sourcemap: 'external',
         target,
         plugins,
@@ -34,20 +34,14 @@ async function build({entrypoints, outdir, target, plugins}) {
 }
 
 async function buildFrontend() {
+    await mkdir('./target/public', { recursive: true });
     await build({
-        entrypoints: ['./build/frontend/app.js'],
+        entrypoints: ['./build/talk/app.js'],
         outdir: './target/public',
         target: 'browser',
         plugins: [tailwindPlugin],
     });
-}
-
-async function buildBackend() {
-    await build({
-        entrypoints: ['./build/backend/server.js'],
-        outdir: './target',
-        target: 'bun',
-});
+    await copyFile('./src/index.html', './target/public/index.html');
 }
 
 
@@ -56,7 +50,6 @@ async function buildBackend() {
 
 console.log('[bun] Building project...');
 await buildFrontend();
-await buildBackend();
 
 if (values.watch) {
     console.log('[bun/watcher] Watching for changes...');
@@ -65,6 +58,5 @@ if (values.watch) {
     for await (const {filename} of watcher) {
         console.log(`[bun/watcher] Change detected in ${filename}. Rebuilding...`);
         await buildFrontend();
-        await buildBackend();
     }
 }
