@@ -133,9 +133,9 @@
        [:h2 {:class "text-xl font-semibold"} "Current Slide"]
        [:div {:class "flex gap-2 items-center"}
         [button {:on-click prev-slide! :disabled disabled?} "Prev"]
+        [button {:on-click next-slide! :disabled disabled?} "Next"]
         [:span {:class "px-4 py-2 font-mono text-lg"} current-slide]
-        [:span {:class "text-gray-400"} "(" (inc idx) "/" (count slide-ids) ")"]
-        [button {:on-click next-slide! :disabled disabled?} "Next"]]]
+        [:span {:class "text-gray-400"} "(" (inc idx) "/" (count slide-ids) ")"]]]
 
       (when-let [slide-notes (get notes current-slide)]
         [:div {:class "p-3 bg-yellow-900/50 border border-yellow-700 rounded-lg"}
