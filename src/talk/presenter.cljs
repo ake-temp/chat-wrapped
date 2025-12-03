@@ -122,47 +122,48 @@
   (let [disabled? (not (ably/connected?))
         current-slide (:slide-id @state)
         idx (current-slide-index)]
-    [:div {:class "p-4 space-y-6 max-w-md mx-auto"}
-     [:h1 {:class "text-2xl font-bold"} "Presenter Controls"]
+    [:div {:class "min-h-screen bg-gray-900 text-white"}
+     [:div {:class "p-4 space-y-6 max-w-md mx-auto"}
+      [:h1 {:class "text-2xl font-bold"} "Presenter Controls"]
 
-     [:div {:class "text-lg"}
-      "Audience connected: " (:audience-count @state)]
+      [:div {:class "text-lg"}
+       "Audience connected: " (:audience-count @state)]
 
-     [:div {:class "space-y-2"}
-      [:h2 {:class "text-xl font-semibold"} "Current Slide"]
-      [:div {:class "flex gap-2 items-center"}
-       [button {:on-click prev-slide! :disabled disabled?} "Prev"]
-       [:span {:class "px-4 py-2 font-mono text-lg"} current-slide]
-       [:span {:class "text-gray-500"} "(" (inc idx) "/" (count slide-ids) ")"]
-       [button {:on-click next-slide! :disabled disabled?} "Next"]]]
+      [:div {:class "space-y-2"}
+       [:h2 {:class "text-xl font-semibold"} "Current Slide"]
+       [:div {:class "flex gap-2 items-center"}
+        [button {:on-click prev-slide! :disabled disabled?} "Prev"]
+        [:span {:class "px-4 py-2 font-mono text-lg"} current-slide]
+        [:span {:class "text-gray-400"} "(" (inc idx) "/" (count slide-ids) ")"]
+        [button {:on-click next-slide! :disabled disabled?} "Next"]]]
 
-     (when-let [slide-notes (get notes current-slide)]
-       [:div {:class "p-3 bg-yellow-50 border border-yellow-200 rounded-lg"}
-        [:h2 {:class "text-sm font-semibold text-yellow-800 mb-2"} "Notes"]
-        [:div {:class "space-y-1"}
-         (for [[idx note] (map-indexed vector slide-notes)]
-           ^{:key idx}
-           [:p {:class "text-yellow-900"} note])]])
+      (when-let [slide-notes (get notes current-slide)]
+        [:div {:class "p-3 bg-yellow-900/50 border border-yellow-700 rounded-lg"}
+         [:h2 {:class "text-sm font-semibold text-yellow-400 mb-2"} "Notes"]
+         [:div {:class "space-y-1"}
+          (for [[idx note] (map-indexed vector slide-notes)]
+            ^{:key idx}
+            [:p {:class "text-yellow-200"} note])]])
 
-     [:div {:class "space-y-2"}
-      [:h2 {:class "text-xl font-semibold"} "All Slides"]
-      [:div {:class "flex flex-col gap-2"}
-       (for [[idx item] (map-indexed vector slides)]
-         ^{:key idx}
-         (if (string? item)
-           [slide-button item disabled?]
-           [:div {:class "flex gap-2"}
-            (for [sid item]
-              ^{:key sid}
-              [slide-button sid disabled?])]))]]
+      [:div {:class "space-y-2"}
+       [:h2 {:class "text-xl font-semibold"} "All Slides"]
+       [:div {:class "flex flex-col gap-2"}
+        (for [[idx item] (map-indexed vector slides)]
+          ^{:key idx}
+          (if (string? item)
+            [slide-button item disabled?]
+            [:div {:class "flex gap-2"}
+             (for [sid item]
+               ^{:key sid}
+               [slide-button sid disabled?])]))]]
 
-     [:div {:class "pt-4 border-t"}
-      [button {:class "px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400"
-               :on-click reset-state!
-               :disabled disabled?}
-       "Reset"]]
+      [:div {:class "pt-4 border-t border-gray-700"}
+       [button {:class "px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-600"
+                :on-click reset-state!
+                :disabled disabled?}
+        "Reset"]]
 
-     [ui/connection-pill]]))
+      [ui/connection-pill]]]))
 
 
 

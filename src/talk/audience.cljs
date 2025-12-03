@@ -49,7 +49,7 @@
 ;; >> UI Components
 
 (defn button [attrs & children]
-  (into [:button (merge {:class "px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 disabled:bg-gray-400"
+  (into [:button (merge {:class "px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 disabled:bg-gray-600"
                          :disabled (not (ably/connected?))}
                         attrs)]
         children))
@@ -69,22 +69,22 @@
                :min min
                :max max
                :value value
-               :class "w-full text-4xl font-bold text-center border-b-2 border-gray-300 focus:border-blue-500 outline-none"
+               :class "w-full text-4xl font-bold text-center border-b-2 border-gray-600 focus:border-blue-500 outline-none bg-transparent"
                :on-change #(let [v (js/parseInt (.. % -target -value))]
                              (when-not (js/isNaN v)
                                (on-value-change v)))}]
       (when unit
-        [:span {:class "text-xl text-gray-600"} unit])]
+        [:span {:class "text-xl text-gray-400"} unit])]
      ;; Slider
      [:div {:class "space-y-1"}
       [:input {:type "range"
                :min min
                :max max
                :value value
-               :class "w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+               :class "w-full h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer"
                :on-change #(on-value-change (js/parseInt (.. % -target -value)))}]
       ;; Min/max labels
-      [:div {:class "flex justify-between text-sm text-gray-500"}
+      [:div {:class "flex justify-between text-sm text-gray-400"}
        [:span min]
        [:span max]]]]))
 
@@ -109,7 +109,7 @@
      [:div {:class "flex flex-col gap-2"}
       [:input {:id input-id
                :type "text"
-               :class "px-4 py-2 border rounded-lg"
+               :class "px-4 py-2 border border-gray-600 rounded-lg bg-transparent"
                :placeholder "Type your answer..."}]
       [button {:on-click (fn []
                            (let [input (js/document.getElementById input-id)
@@ -119,7 +119,7 @@
                                (set! (.-value input) ""))))}
        "Submit"]
       (when current-vote
-        [:div {:class "text-sm text-gray-600"} "Your answer: " current-vote])]]))
+        [:div {:class "text-sm text-gray-400"} "Your answer: " current-vote])]]))
 
 (defn question-voter [question-id]
   (let [question (presenter/get-question question-id)]
@@ -130,7 +130,7 @@
       [:div "Unknown question type"])))
 
 (defn waiting-ui []
-  [:div {:class "text-center text-gray-600"}
+  [:div {:class "text-center text-gray-400"}
    [:h2 {:class "text-xl"} "Waiting for next question..."]
    [:p "The presenter will activate a question soon."]])
 
@@ -146,10 +146,11 @@
 
 (defn audience-ui []
   (let [slide-id (:slide-id @state)]
-    [:div {:class "p-4 max-w-md mx-auto"}
-     [:h1 {:class "text-2xl font-bold mb-4 text-center"} "Vote"]
-     [render-voter slide-id]
-     [ui/connection-pill]]))
+    [:div {:class "min-h-screen bg-gray-900 text-white"}
+     [:div {:class "p-4 max-w-md mx-auto"}
+      [:h1 {:class "text-2xl font-bold mb-4 text-center"} "Vote"]
+      [render-voter slide-id]
+      [ui/connection-pill]]]))
 
 
 
