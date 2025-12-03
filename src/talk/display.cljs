@@ -192,48 +192,54 @@
 
 ;; >> Analysis Slide
 
-(defn scale-chart [question-id question]
-  (let [stats (scale-stats question-id)
-        min-val (get-in question [:options :min])
-        max-val (get-in question [:options :max])
-        unit (get-in question [:options :unit])
-        min-label (get-in question [:options :min-label])
-        max-label (get-in question [:options :max-label])
-        range-size (- max-val min-val)
-        bin-size (or (get-in question [:options :bin-size])
-                     (js/Math.ceil (/ (inc range-size) (js/Math.min 10 (inc range-size)))))
-        num-bins (js/Math.ceil (/ (inc range-size) bin-size))
-        bins (vec (for [i (range num-bins)]
-                 (let [bin-start (+ min-val (* i bin-size))
-                       bin-end (js/Math.min max-val (+ bin-start (dec bin-size)))]
-                   {:start bin-start
-                    :end bin-end
-                    :count (if stats
-                             (reduce + (for [v (range bin-start (inc bin-end))]
-                                         (get (:distribution stats) v 0)))
-                             0)})))
-        max-count (apply max 1 (map :count bins))]
-    (if stats
-      [:div {:class "text-center space-y-4"}
-       [:div {:class "text-8xl font-bold text-blue-400"}
-        (.toFixed (:average stats) 1)
-        (when unit [:span {:class "text-4xl ml-2"} unit])]
-       [:div {:class "text-xl text-gray-400"}
-        "Average from " (:count stats) " responses"]
-       [:div {:class "flex justify-center items-end gap-1 mt-8 px-4"}
-        (for [{:keys [start end count]} bins]
-          (let [height (if (pos? max-count) (* 150 (/ count max-count)) 0)]
-            ^{:key start}
-            [:div {:class "flex-1 text-center min-w-0"}
-             [:div {:class "bg-blue-500 rounded-t mx-auto"
-                    :style {:height (str height "px")}}]
-             [:div {:class "text-xs text-gray-400 mt-1 truncate"}
-              (if (= start end) start (str start "-" end))]]))]
-       (when (or min-label max-label)
-         [:div {:class "flex justify-between text-sm text-gray-400 mt-2 px-4"}
-          [:span (or min-label "")]
-          [:span (or max-label "")]])]
-      [:div {:class "text-2xl text-gray-500"} "No responses yet"])))
+(defn scale-chart
+  ([question-id question] (scale-chart question-id question nil))
+  ([question-id question answer]
+   (let [stats (scale-stats question-id)
+         min-val (get-in question [:options :min])
+         max-val (get-in question [:options :max])
+         unit (get-in question [:options :unit])
+         min-label (get-in question [:options :min-label])
+         max-label (get-in question [:options :max-label])
+         range-size (- max-val min-val)
+         bin-size (or (get-in question [:options :bin-size])
+                      (js/Math.ceil (/ (inc range-size) (js/Math.min 10 (inc range-size)))))
+         num-bins (js/Math.ceil (/ (inc range-size) bin-size))
+         bins (vec (for [i (range num-bins)]
+                  (let [bin-start (+ min-val (* i bin-size))
+                        bin-end (js/Math.min max-val (+ bin-start (dec bin-size)))]
+                    {:start bin-start
+                     :end bin-end
+                     :count (if stats
+                              (reduce + (for [v (range bin-start (inc bin-end))]
+                                          (get (:distribution stats) v 0)))
+                              0)})))
+         max-count (apply max 1 (map :count bins))]
+     (if stats
+       [:div {:class "text-center space-y-4"}
+        [:div {:class "flex items-baseline justify-center gap-6"}
+         [:div {:class "text-8xl font-bold text-blue-400"}
+          (.toFixed (:average stats) 1)
+          (when unit [:span {:class "text-4xl ml-2"} unit])]
+         (when answer
+           [:div {:class "text-4xl text-green-400"}
+            "(" answer (when unit [:span {:class "text-2xl ml-1"} unit]) ")"])]
+        [:div {:class "text-xl text-gray-400"}
+         "Average from " (:count stats) " responses"]
+        [:div {:class "flex justify-center items-end gap-1 mt-8 px-4"}
+         (for [{:keys [start end count]} bins]
+           (let [height (if (pos? max-count) (* 150 (/ count max-count)) 0)]
+             ^{:key start}
+             [:div {:class "flex-1 text-center min-w-0"}
+              [:div {:class "bg-blue-500 rounded-t mx-auto"
+                     :style {:height (str height "px")}}]
+              [:div {:class "text-xs text-gray-400 mt-1 truncate"}
+               (if (= start end) start (str start "-" end))]]))]
+        (when (or min-label max-label)
+          [:div {:class "flex justify-between text-sm text-gray-400 mt-2 px-4"}
+           [:span (or min-label "")]
+           [:span (or max-label "")]])]
+       [:div {:class "text-2xl text-gray-500"} "No responses yet"]))))
 
 (defn choice-chart [question-id question]
   (let [stats (choice-stats question-id)
@@ -263,16 +269,18 @@
          [:div {:class "p-3 bg-gray-700 rounded text-lg"} resp])]
       [:div {:class "text-2xl text-gray-500"} "No responses yet"])))
 
-(defn analysis-slide [question-id]
-  (let [question (presenter/get-question question-id)]
-    [slide-wrapper
-     [:div {:class "text-center w-full"}
-      [:h1 {:class "text-4xl font-bold mb-8"} (:text question)]
-      (case (:kind question)
-        :scale [scale-chart question-id question]
-        :choice [choice-chart question-id question]
-        :text [text-list question-id]
-        [:div "Unknown question type"])]]))
+(defn analysis-slide
+  ([question-id] (analysis-slide question-id nil))
+  ([question-id answer]
+   (let [question (presenter/get-question question-id)]
+     [slide-wrapper
+      [:div {:class "text-center w-full"}
+       [:h1 {:class "text-4xl font-bold mb-8"} (:text question)]
+       (case (:kind question)
+         :scale [scale-chart question-id question answer]
+         :choice [choice-chart question-id question]
+         :text [text-list question-id]
+         [:div "Unknown question type"])]])))
 
 
 
@@ -297,13 +305,13 @@
     "wotc-answer" [wotc-answer-slide]
     "rules" [rules-slide]
     "q2" [question-slide "q2" persimmon-img]
-    "q2-results" [analysis-slide "q2"]
+    "q2-results" [analysis-slide "q2" 221]
     "independence" [independence-slide]
     "q3" [q3-slide]
-    "q3-results" [analysis-slide "q3"]
+    "q3-results" [analysis-slide "q3" 1953]
     "diversity" [diversity-slide]
     "q4" [question-slide "q4"]
-    "q4-results" [analysis-slide "q4"]
+    "q4-results" [analysis-slide "q4" 73]
     "ground-truth" [ground-truth-slide]
     "q5" [question-slide "q5"]
     "q5-results" [analysis-slide "q5"]
