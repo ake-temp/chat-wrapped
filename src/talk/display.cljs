@@ -23,7 +23,8 @@
                     :audience-count 0
                     :speaker-messages []
                     :reactions []
-                    :qr-code-data nil})
+                    :qr-code-data nil
+                    :selected-speaker nil})
 
 (defn save-state! []
   (js/localStorage.setItem "display-state"
@@ -334,17 +335,25 @@
 
 (defn speaker-message-display []
   (let [messages (:speaker-messages @state)
-        valid-messages (filter #(seq (:message %)) messages)]
-    (when (seq valid-messages)
+        valid-messages (filter #(seq (:message %)) messages)
+        selected-speaker (:selected-speaker @state)
+        speaker-client-id (or (:client-id (first messages)) selected-speaker)
+        speaker-vote (when speaker-client-id
+                       (get-in @state [:votes "q3" :latest-vote speaker-client-id :value]))
+        should-show? (or (seq valid-messages) speaker-vote)]
+    (when should-show?
       [:div {:class "absolute top-8 right-8 max-w-md space-y-3"}
        ;; Header card
        [:div {:class "bg-gray-800 rounded-2xl p-3 shadow-xl border border-gray-700"}
         [:div {:class "flex items-center gap-3"}
          [:div {:class "w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-lg"}
           "🌟"]
-         [:div
+         [:div {:class "flex-1"}
           [:div {:class "font-bold text-white"} "Cool influencer"]
-          [:div {:class "text-gray-400 text-sm"} "Live from the audience"]]]]
+          [:div {:class "text-gray-400 text-sm"} "Live from the audience"]]
+         (when speaker-vote
+           [:div {:class "text-2xl font-bold text-blue-400"}
+            speaker-vote])]]
        ;; Messages (progressively fade: 100%, 80%, 60%, 40%, 20%)
        (for [[idx msg] (map-indexed vector valid-messages)]
          (let [opacity (- 100 (* idx 20))]
@@ -644,7 +653,9 @@
       (presenter/get-state
         (fn [presenter-state]
           (when presenter-state
-            (swap! state assoc :slide-id (:slide-id presenter-state)))))))
+            (swap! state assoc
+                   :slide-id (:slide-id presenter-state)
+                   :selected-speaker (:selected-speaker presenter-state)))))))
 
   ;; Subscribe to votes
   (ably/subscribe! "votes" process-vote)
