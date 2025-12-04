@@ -5,7 +5,14 @@
             ["qrcode" :as QRCode]
             [clojure.string :as str]))
 
-(def persimmon-img "/persimmon.jpeg")
+;; Detect base path from URL at runtime (strip trailing slash)
+(def base-path
+  (let [pathname (.-pathname js/location)]
+    (if (str/ends-with? pathname "/")
+      (subs pathname 0 (dec (count pathname)))
+      pathname)))
+
+(def persimmon-img (str base-path "/persimmon.jpeg"))
 (def join-url "blog.bythe.rocks/talk/christmas")
 
 
