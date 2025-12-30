@@ -2,9 +2,7 @@
   (:require ["reagami" :as reagami]
             ["./entry.css"]
             ["./ably.js" :as ably]
-            ["./presenter.js" :as presenter]
-            ["./audience.js" :as audience]
-            ["./display.js" :as display]))
+            ["./chat_quiz.js" :as chat-quiz]))
 
 
 ;; >> Configuration
@@ -16,10 +14,9 @@
 
 (defn get-role []
   (let [params (js/URLSearchParams. (.-search js/location))]
-    (cond
-      (.get params "display") :display
-      (.get params "control") :presenter
-      :else :audience)))
+    (if (.get params "control")
+      :presenter
+      :audience)))
 
 (def role (get-role))
 
@@ -28,10 +25,7 @@
 ;; >> App Component
 
 (defn app []
-  (case role
-    :display [display/display-ui]
-    :presenter [presenter/presenter-ui]
-    :audience [audience/audience-ui]))
+  [chat-quiz/chat-quiz-ui])
 
 
 
@@ -40,14 +34,7 @@
 (defn render []
   (reagami/render (js/document.getElementById "app") [app]))
 
-;; Get the right state atom based on role
-(def current-state
-  (case role
-    :display display/state
-    :presenter presenter/state
-    :audience audience/state))
-
-(add-watch current-state ::render (fn [_ _ _ _] (render)))
+(add-watch chat-quiz/state ::render (fn [_ _ _ _] (render)))
 
 
 
@@ -56,9 +43,6 @@
 (defn init! []
   (render)
   (ably/init! ABLY_API_KEY)
-  (case role
-    :display (display/init!)
-    :presenter (presenter/init!)
-    :audience (audience/init!)))
+  (chat-quiz/init! (= role :presenter)))
 
 (init!)
