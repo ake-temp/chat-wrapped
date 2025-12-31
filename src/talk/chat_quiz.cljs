@@ -461,7 +461,7 @@
 
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :wrapped-intro :show-avatar true}
-   {:type :wrapped-profiles :show-avatar true}
+   {:type :wrapped-profiles :show-avatar true :show-stats false}
 
    ;; Quiz intro
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
@@ -680,7 +680,7 @@
 
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :text :content "Now check out your updated Wrapped profile with your quiz ranking!" :show-avatar true}
-   {:type :wrapped-profiles :show-avatar true}
+   {:type :wrapped-profiles :show-avatar true :show-stats true}
 
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :text :content "Want to see everyone else's profiles?" :show-avatar true}
@@ -1491,16 +1491,14 @@
                                  :on-close on-close}))))
 
 ;; Profile viewer - shows user's own profile based on selected name
-(defn wrapped-profile-selector [{:keys [show-avatar? is-last?]}]
+(defn wrapped-profile-selector [{:keys [show-avatar? is-last? show-stats]}]
   (let [[fullscreen? set-fullscreen!] (useState false)
         my-name (:my-name @state)
         profile (get wrapped-profiles my-name)
-        photo-url (get profile-photos my-name)
         sorted-scores (get-sorted-scores)
-        quiz-finished? (>= (:message-index @state) (- total-steps 1))
         my-entry (first (filter #(= (:name %) my-name) sorted-scores))
-        quiz-rank (when quiz-finished? (:rank my-entry))
-        is-winner? (and quiz-finished? (= quiz-rank 1))]
+        quiz-rank (when show-stats (:rank my-entry))
+        is-winner? (and show-stats (= quiz-rank 1))]
     ($ "div" {:class "py-2 pl-10"}
        (if (and my-name profile)
          ;; Show their profile card with tap to fullscreen
@@ -1510,10 +1508,10 @@
                       :on-click #(set-fullscreen! true)}
                ($ wrapped-profile-card {:name my-name
                                         :profile profile
-                                        :show-quiz-rank? quiz-finished?
+                                        :show-quiz-rank? show-stats
                                         :quiz-rank quiz-rank
                                         :is-winner? is-winner?
-                                        :show-stats? quiz-finished?})))
+                                        :show-stats? show-stats})))
          ;; Fallback if no name selected
          ($ "div" {:class "text-gray-400 text-sm italic"}
             "Select your name above to see your Wrapped profile"))
@@ -1521,10 +1519,10 @@
        (when fullscreen?
          ($ profile-fullscreen {:name my-name
                                 :profile profile
-                                :show-quiz-rank? quiz-finished?
+                                :show-quiz-rank? show-stats
                                 :quiz-rank quiz-rank
                                 :is-winner? is-winner?
-                                :show-stats? quiz-finished?
+                                :show-stats? show-stats
                                 :on-close #(set-fullscreen! false)})))))
 
 ;; Profile gallery - grid to view anyone's profile at the end
