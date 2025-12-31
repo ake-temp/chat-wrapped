@@ -13,6 +13,13 @@
 (def QUIZ-CHANNEL "chat-quiz-answers")
 (def RESET-CHANNEL "chat-quiz-reset")
 
+;; Detect base path from URL at runtime (strip trailing slash)
+(def base-path
+  (let [pathname (.-pathname js/location)]
+    (if (str/ends-with? pathname "/")
+      (subs pathname 0 (dec (count pathname)))
+      pathname)))
+
 (def participant-names
   ["Jack Crowson" "Jack Rowland" "James" "Zack" "Lee" "Oliver"
    "Retrospectre" "Samir" "Jaspreet" "Liam" "Georgia" "Mariana"
@@ -342,48 +349,48 @@
 
 ;; Profile photo mappings (name -> filename)
 (def profile-photos
-  {"Jack Crowson" "/profile_photos/Jack_Crowson.jpg"
-   "James" "/profile_photos/James.jpg"
-   "Zack" "/profile_photos/Zack_Pollard.jpg"
-   "Lee" "/profile_photos/Lee_Bain.jpg"
-   "Oliver" "/profile_photos/Oliver_Marshall.jpg"
-   "Retrospectre" "/profile_photos/Retrospectre.jpg"
-   "Jaspreet" "/profile_photos/Jaspreet_Crowson.jpg"
-   "Liam" "/profile_photos/Liam_Moloney.jpg"
-   "Georgia" "/profile_photos/Georgia.jpg"
-   "Mariana" "/profile_photos/Mariana.jpg"
-   "Jess" "/profile_photos/Jess_Brookfield.jpg"})
+  {"Jack Crowson" (str base-path "/profile_photos/Jack_Crowson.jpg")
+   "James" (str base-path "/profile_photos/James.jpg")
+   "Zack" (str base-path "/profile_photos/Zack_Pollard.jpg")
+   "Lee" (str base-path "/profile_photos/Lee_Bain.jpg")
+   "Oliver" (str base-path "/profile_photos/Oliver_Marshall.jpg")
+   "Retrospectre" (str base-path "/profile_photos/Retrospectre.jpg")
+   "Jaspreet" (str base-path "/profile_photos/Jaspreet_Crowson.jpg")
+   "Liam" (str base-path "/profile_photos/Liam_Moloney.jpg")
+   "Georgia" (str base-path "/profile_photos/Georgia.jpg")
+   "Mariana" (str base-path "/profile_photos/Mariana.jpg")
+   "Jess" (str base-path "/profile_photos/Jess_Brookfield.jpg")})
 
 ;; Sticker mappings (emoji -> filename)
 (def sticker-images
-  {"💛" "/stickers/yellow.webp"
-   "😭🤦" "/stickers/crying_facepalm.webp"
-   "🤣" "/stickers/rofl.webp"
-   "🙏" "/stickers/hands_together.webp"
-   "😅" "/stickers/sweat_cry.webp"
-   "😆" "/stickers/omegalol.webp"
-   "😭🙌" "/stickers/crying_hands_in_air.webp"
-   "💙" "/stickers/blue.webp"
-   "📞" "/stickers/telephone.webp"
-   "🐧" "/stickers/penguin.webp"})
+  {"💛" (str base-path "/stickers/yellow.webp")
+   "😭🤦" (str base-path "/stickers/crying_facepalm.webp")
+   "🤣" (str base-path "/stickers/rofl.webp")
+   "🙏" (str base-path "/stickers/hands_together.webp")
+   "😅" (str base-path "/stickers/sweat_cry.webp")
+   "😆" (str base-path "/stickers/omegalol.webp")
+   "😭🙌" (str base-path "/stickers/crying_hands_in_air.webp")
+   "💙" (str base-path "/stickers/blue.webp")
+   "📞" (str base-path "/stickers/telephone.webp")
+   "🐧" (str base-path "/stickers/penguin.webp")})
 
 ;; Collage photos (random selection)
 (def collage-photos
-  ["/random_images/photo1.jpeg"
-   "/random_images/photo2.jpeg"
-   "/random_images/photo3.jpeg"
-   "/random_images/photo4.jpeg"
-   "/random_images/photo5.jpeg"
-   "/random_images/photo6.jpeg"])
+  [(str base-path "/random_images/photo1.jpeg")
+   (str base-path "/random_images/photo2.jpeg")
+   (str base-path "/random_images/photo3.jpeg")
+   (str base-path "/random_images/photo4.jpeg")
+   (str base-path "/random_images/photo5.jpeg")
+   (str base-path "/random_images/photo6.jpeg")])
 
 ;; Holiday photos (Tenerife trip)
 (def holiday-photos
-  ["/holiday_photos/holiday1.jpeg"
-   "/holiday_photos/holiday2.jpeg"
-   "/holiday_photos/holiday3.jpeg"
-   "/holiday_photos/holiday4.jpeg"
-   "/holiday_photos/holiday5.jpeg"
-   "/holiday_photos/holiday6.jpeg"])
+  [(str base-path "/holiday_photos/holiday1.jpeg")
+   (str base-path "/holiday_photos/holiday2.jpeg")
+   (str base-path "/holiday_photos/holiday3.jpeg")
+   (str base-path "/holiday_photos/holiday4.jpeg")
+   (str base-path "/holiday_photos/holiday5.jpeg")
+   (str base-path "/holiday_photos/holiday6.jpeg")])
 
 ;; Reactions with final counts
 (def reaction-data
@@ -985,7 +992,7 @@
                (first sender))))
        ($ "div" {:class "min-w-0"}
           (if is-image?
-            ($ "img" {:src "/trump_dabbing.jpeg" :class "rounded-xl max-w-64 max-h-64 object-cover"})
+            ($ "img" {:src (str base-path "/trump_dabbing.jpeg") :class "rounded-xl max-w-64 max-h-64 object-cover"})
             ($ "div" {:class (str "rounded-2xl px-4 py-2 bg-[#242424] text-white inline-block "
                                   (when (= style :emoji) "text-6xl text-center"))}
                content))))))
@@ -1017,7 +1024,7 @@
        ($ "div" {}
           ($ "div" {:class "rounded-2xl p-4 bg-[#242424] inline-flex items-center justify-center"}
              ($ "div" {:class "relative inline-block"}
-                ($ "img" {:src "/telegram_logo.png" :class "w-24 h-24 object-contain"})
+                ($ "img" {:src (str base-path "/telegram_logo.png") :class "w-24 h-24 object-contain"})
                 ($ "div" {:class "absolute -top-2 -right-2 bg-red-500 text-white rounded-full min-w-8 h-8 flex items-center justify-center text-sm font-bold px-2"
                           :ref badge-ref}
                    (.toLocaleString displayed))))))))
@@ -1431,7 +1438,7 @@
     ($ "div" {:class "relative bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 rounded-2xl overflow-hidden shadow-xl shadow-purple-900/50"}
        ;; Background pattern
        ($ "div" {:class "absolute inset-0 opacity-20"
-                 :style {:background-image "url('/background.svg')"
+                 :style {:background-image (str "url('" base-path "/background.svg')")
                          :background-repeat "repeat"
                          :filter "invert(1)"}})
        ;; Content
@@ -1754,7 +1761,7 @@
 (defn chat-quiz-ui []
   ($ "div" {:class "h-dvh bg-[#0e0e0e] flex flex-col overflow-hidden relative"}
      ($ "div" {:class "fixed inset-0 opacity-10 pointer-events-none z-0"
-               :style {:background-image "url('/background.svg')"
+               :style {:background-image (str "url('" base-path "/background.svg')")
                        :background-repeat "repeat"
                        :filter "invert(1)"}})
      ($ header)
