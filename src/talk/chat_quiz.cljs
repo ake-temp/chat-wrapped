@@ -407,13 +407,13 @@
    ;; Chat creation - Wrapped group
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :text :content "Chat was created on August 10th 2018 📆"}
-   {:type :text :content "In that time we've had ~514,524 messages"}
+   {:type :text :content "In that time we've sent over 514,000 messages"}
    {:type :text :content "190 messages per day!" :batch-with-next true}
    {:type :message-counter :target 514524 :duration 3000}
    {:type :text :content "With 25,431 in 2025 alone" :batch-with-next true}
    {:type :message-counter :target 25431 :duration 2000}
    {:type :text :content "On January 1st 2020 a tragedy happened"}
-   {:type :text :content "Chat history was purged" :batch-with-next true}
+   {:type :text :content "Chat history was purged"}
    {:type :purge-graph :total 514524 :purged 180397}
    {:type :text :content "Archeologists continue to wonder at the history lost"}
    {:type :text :content "These are the earliest messages we have:" :show-avatar true}
@@ -454,7 +454,7 @@
 
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :text :content "Now presenting, your personal Wrapped Profile!"}
-   {:type :text :content "First, select your profile:"}
+   {:type :text :content "First, who are you?"}
    {:type :name-select :id "name-select" :show-avatar true}
 
    ;; ===== WRAPPED PROFILES =====
@@ -492,6 +492,7 @@
                ["Zack" 43102]
                ["Lee" 20940]
                ["Oliver" 18458]]}
+   {:type :text :content "Surprised? Anyone?" :show-avatar true}
 
    ;; Q2: Most popular sticker
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
@@ -515,6 +516,7 @@
                ["💙 Blue" 485]
                ["📞 Telephone" 480]
                ["🐧 Penguin" 393]]}
+   {:type :text :content "A classic" :show-avatar true}
 
    ;; Q3: Longest gap
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
@@ -536,7 +538,7 @@
 
    ;; Q4: Emoji 😉
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Who's favourite emoji is this?" :show-avatar true :batch-with-next true}
+   {:type :text :content "Whose favourite emoji is this?" :show-avatar true :batch-with-next true}
    {:type :emoji :content "😉" :batch-with-next true}
    {:type :buttons
     :id "q4-emoji1"
@@ -546,7 +548,8 @@
 
    ;; Q5: Emoji 😛
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :emoji :content "😛" :show-avatar true :batch-with-next true}
+   {:type :text :content "What about this one?" :show-avatar true :batch-with-next true}
+   {:type :emoji :content "😛" :batch-with-next true}
    {:type :buttons
     :id "q5-emoji2"
     :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]
@@ -555,7 +558,8 @@
 
    ;; Q6: Emoji 💀
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :emoji :content "💀" :show-avatar true :batch-with-next true}
+   {:type :text :content "Who uses this the most?" :show-avatar true :batch-with-next true}
+   {:type :emoji :content "💀" :batch-with-next true}
    {:type :buttons
     :id "q6-emoji3"
     :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]
@@ -564,7 +568,8 @@
 
    ;; Q7: Emoji 😂
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :emoji :content "😂" :show-avatar true :batch-with-next true}
+   {:type :text :content "And finally..." :show-avatar true :batch-with-next true}
+   {:type :emoji :content "😂" :batch-with-next true}
    {:type :buttons
     :id "q7-emoji4"
     :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]
@@ -573,8 +578,8 @@
 
    ;; Catch phrases intro
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Next, did you know that you have catch phrases?"}
-   {:type :text :content "Who's catch phrases are these:" :show-avatar true}
+   {:type :text :content "Everyone has their signature phrases..."}
+   {:type :text :content "But can you recognise them?" :show-avatar true}
 
    ;; Q8: Catch phrase - yum, toil toil toil
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
