@@ -1,6 +1,6 @@
 import tailwindPlugin from 'bun-plugin-tailwind';
 import { parseArgs } from 'util';
-import { watch, copyFile, mkdir } from 'fs/promises';
+import { watch, mkdir, cp } from 'fs/promises';
 
 const { values, _positionals } = parseArgs({
     args: Bun.argv,
@@ -36,6 +36,11 @@ async function build({entrypoints, outdir, target, plugins}) {
     }
 }
 
+// Copy a directory recursively
+async function copyDir(src, dest) {
+    await cp(src, dest, { recursive: true });
+}
+
 async function buildFrontend() {
     await mkdir('./target/public', { recursive: true });
     await build({
@@ -51,16 +56,8 @@ async function buildFrontend() {
     html = html.replace(/src="\/app\.js"/g, `src="${basePath}/app.js"`);
     await Bun.write('./target/public/index.html', html);
 
-    await copyFile('./src/IMG_5313.smaller.jpeg', './target/public/persimmon.jpeg');
-
-    // Copy logos
-    await mkdir('./target/public/logos', { recursive: true });
-    await copyFile('./src/logos/squint.png', './target/public/logos/squint.png');
-    await copyFile('./src/logos/babashka.png', './target/public/logos/babashka.png');
-    await copyFile('./src/logos/ably.png', './target/public/logos/ably.png');
-    await copyFile('./src/logos/bun.svg', './target/public/logos/bun.svg');
-    await copyFile('./src/logos/tailwind.svg', './target/public/logos/tailwind.svg');
-    await copyFile('./src/logos/claude.png', './target/public/logos/claude.png');
+    // Copy all assets
+    await copyDir('./src/assets', './target/public');
 }
 
 
