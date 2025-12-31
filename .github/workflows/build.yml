@@ -30,7 +30,7 @@ jobs:
       - name: Build
         run: |
           bun squint compile
-          bun run build.js --base-path /talk/christmas
+          bun run build.js --base-path /talk/chat-wrapped
 
       - name: Deploy to dist branch
         uses: peaceiris/actions-gh-pages@v4
