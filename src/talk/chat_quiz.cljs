@@ -682,6 +682,10 @@
    {:type :text :content "Now check out your updated Wrapped profile with your quiz ranking!" :show-avatar true}
    {:type :wrapped-profiles :show-avatar true}
 
+   {:type :sender-header :sender "Wrapped" :batch-with-next true}
+   {:type :text :content "Want to see everyone else's profiles?" :show-avatar true}
+   {:type :wrapped-gallery :show-avatar true}
+
    ;; Outro
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :text :content "Thanks to everyone for participating!" :show-avatar true}])
@@ -1495,6 +1499,54 @@
                                 :show-stats? quiz-finished?
                                 :on-close #(set-fullscreen! false)})))))
 
+;; Profile gallery - grid to view anyone's profile at the end
+(defn wrapped-profile-gallery [{:keys [show-avatar? is-last?]}]
+  (let [[selected-profile set-selected!] (useState nil)
+        [fullscreen? set-fullscreen!] (useState false)
+        sorted-scores (get-sorted-scores)
+        get-quiz-rank (fn [name]
+                        (let [idx (->> sorted-scores
+                                       (map-indexed vector)
+                                       (filter #(= (:name (second %)) name))
+                                       first)]
+                          (when idx (inc (first idx)))))
+        winner-name (:name (first sorted-scores))]
+    ($ "div" {:class "py-2 pl-10"}
+       ($ "div" {:class "grid grid-cols-2 gap-2"}
+          (.map (to-array participant-names)
+                (fn [name]
+                  (let [photo-url (get profile-photos name)
+                        profile (get wrapped-profiles name)
+                        quiz-rank (get-quiz-rank name)
+                        is-winner? (= name winner-name)]
+                    (when profile
+                      ($ "button"
+                         {:key name
+                          :class "flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all bg-[#242424] text-white hover:bg-[#2f2f2f]"
+                          :on-click (fn []
+                                      (set-selected! name)
+                                      (set-fullscreen! true))}
+                         ($ "div" {:class "relative"}
+                            (when is-winner?
+                              ($ "div" {:class "absolute -top-2 -right-1 text-xs"} "👑"))
+                            (if photo-url
+                              ($ "img" {:src photo-url :class "w-8 h-8 rounded-full object-cover"})
+                              ($ "div" {:class "w-8 h-8 rounded-full bg-[#2f2f2f] flex items-center justify-center text-xs"}
+                                 (first name))))
+                         ($ "span" {:class "truncate"} name)))))))
+       ;; Fullscreen modal
+       (when (and fullscreen? selected-profile)
+         (let [profile (get wrapped-profiles selected-profile)
+               quiz-rank (get-quiz-rank selected-profile)
+               is-winner? (= selected-profile winner-name)]
+           ($ profile-fullscreen {:name selected-profile
+                                  :profile profile
+                                  :show-quiz-rank? true
+                                  :quiz-rank quiz-rank
+                                  :is-winner? is-winner?
+                                  :show-stats? true
+                                  :on-close #(set-fullscreen! false)}))))))
+
 ;; Wrapped intro message
 (defn wrapped-intro [{:keys [show-avatar?]}]
   ($ "div" {:class "flex items-end gap-2 mb-0.5"}
@@ -1552,6 +1604,7 @@
       :text-with-reactions ($ text-with-reactions props)
       :wrapped-intro ($ wrapped-intro props)
       :wrapped-profiles ($ wrapped-profile-selector props)
+      :wrapped-gallery ($ wrapped-profile-gallery props)
       nil)))
 
 ;; Get messages to display based on message-index
@@ -1638,6 +1691,7 @@
                  :user-message (str (:sender next-msg) ": " (:content next-msg))
                  :wrapped-intro "Wrapped intro"
                  :wrapped-profiles "Profile selector"
+                 :wrapped-gallery "Profile gallery"
                  "...")))))))
 
 ;; Main UI
