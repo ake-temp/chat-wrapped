@@ -453,8 +453,8 @@
    ;; ===== NAME SELECTION =====
 
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Welcome to Chat: Wrapped! 🎉"}
-   {:type :text :content "First, select your name:"}
+   {:type :text :content "Now presenting, your personal Wrapped Profile!"}
+   {:type :text :content "First, select your profile:"}
    {:type :name-select :id "name-select" :show-avatar true}
 
    ;; ===== WRAPPED PROFILES =====
@@ -657,6 +657,7 @@
    {:type :reveal :id "q14-event3" :answer "Holiday Photos" :text "It was uncomfortably close but Holiday Photos wins" :show-avatar true}
    {:type :text :content "This was the trip to Tenerife" :batch-with-next true}
    {:type :holiday-collage}
+   {:type :text :content "What an exciting trip!"}
    {:type :link :content "https://t.me/c/1360175818/367499" :show-avatar true}
 
    ;; Q15: Most participants
