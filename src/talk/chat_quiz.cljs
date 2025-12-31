@@ -1354,8 +1354,18 @@
                                ($ "span" {:class "text-gray-400"} cnt))))))))))))
 
 ;; Scores display
-(defn scores-message [{:keys [final show-avatar?]}]
-  (let [sorted-scores (get-sorted-scores)]
+(defn scores-message [{:keys [final show-avatar? is-last?]}]
+  (let [live-scores (get-sorted-scores)
+        [snapshot set-snapshot!] (useState nil)
+        ;; Snapshot scores when this becomes visible (is-last?) for non-final scores
+        _ (useEffect
+            (fn []
+              (when (and is-last? (not final) (nil? snapshot))
+                (set-snapshot! live-scores))
+              js/undefined)
+            #js [is-last?])
+        ;; Use snapshot for intermediate scores, live for final
+        sorted-scores (if final live-scores (or snapshot live-scores))]
     ($ "div" {:class "flex items-end gap-2 mb-0.5"}
        ($ "div" {:class "w-8 shrink-0"}
           ($ "div" {:class (avatar-class show-avatar?)} "W"))
