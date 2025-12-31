@@ -465,7 +465,9 @@
 
    ;; Quiz intro
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Now let's see how well you know the Chat with a quiz 📊" :show-avatar true}
+   {:type :text :content "Seems a little empty..."}
+   {:type :text :content "Let's see if we can fill it up a bit"}
+   {:type :text :content "And see how well you know the Chat with a quiz 📊" :show-avatar true}
 
    ;; ===== ROUND 1 =====
 
@@ -1359,7 +1361,7 @@
                   ($ "div" {:class "text-gray-400 italic"} "No scores yet"))))))))
 
 ;; Wrapped Profile Card - Spotify Wrapped style
-(defn wrapped-profile-card [{:keys [name profile show-quiz-rank? quiz-rank is-winner? on-close]}]
+(defn wrapped-profile-card [{:keys [name profile show-quiz-rank? quiz-rank is-winner? show-stats? on-close]}]
   (let [photo-url (get profile-photos name)
         {:keys [vibe vibe-desc total-messages messages-2025 avg-length emoji-count
                 fav-emoji late-night-pct sarcasm traits]} profile]
@@ -1373,7 +1375,7 @@
        ;; Content
        ($ "div" {:class "relative p-6"}
           ;; Header with photo and name
-          ($ "div" {:class "flex items-start gap-4 mb-6"}
+          ($ "div" {:class (str "flex items-start gap-4" (when show-stats? " mb-6"))}
              ($ "div" {:class "relative"}
                 ;; Crown for winner
                 (when is-winner?
@@ -1392,50 +1394,53 @@
              ($ "div" {:class "flex-1 min-w-0"}
                 ($ "div" {:class "text-white text-2xl font-bold mb-1 truncate"} name)
                 ($ "div" {:class "text-purple-300 text-lg font-semibold mb-1"} vibe)
-                ($ "div" {:class "text-gray-300 text-sm"} vibe-desc)))
+                (when show-stats?
+                  ($ "div" {:class "text-gray-300 text-sm"} vibe-desc))))
 
-          ;; Stats grid
-          ($ "div" {:class "grid grid-cols-3 gap-3 mb-6"}
-             ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
-                ($ "div" {:class "text-2xl font-bold text-white"} (.toLocaleString total-messages))
-                ($ "div" {:class "text-xs text-gray-300"} "Messages"))
-             ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
-                ($ "div" {:class "text-2xl font-bold text-white"} avg-length)
-                ($ "div" {:class "text-xs text-gray-300"} "Words/msg"))
-             ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
-                ($ "div" {:class "text-2xl font-bold text-white"} (str emoji-count))
-                ($ "div" {:class "text-xs text-gray-300"} "Emojis"))
-             ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
-                ($ "div" {:class "text-2xl font-bold text-white"} (if fav-emoji fav-emoji "-"))
-                ($ "div" {:class "text-xs text-gray-300"} "Fav Emoji"))
-             ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
-                ($ "div" {:class "text-2xl font-bold text-white"} (str late-night-pct "%"))
-                ($ "div" {:class "text-xs text-gray-300"} "Night Owl"))
-             ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
-                ($ "div" {:class "text-2xl font-bold text-white"} (str (js/Math.round (* sarcasm 100)) "%"))
-                ($ "div" {:class "text-xs text-gray-300"} "Sarcasm")))
+          ;; Stats grid - only shown after quiz
+          (when show-stats?
+            ($ "div" {}
+               ($ "div" {:class "grid grid-cols-3 gap-3 mb-6"}
+                  ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
+                     ($ "div" {:class "text-2xl font-bold text-white"} (.toLocaleString total-messages))
+                     ($ "div" {:class "text-xs text-gray-300"} "Messages"))
+                  ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
+                     ($ "div" {:class "text-2xl font-bold text-white"} avg-length)
+                     ($ "div" {:class "text-xs text-gray-300"} "Words/msg"))
+                  ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
+                     ($ "div" {:class "text-2xl font-bold text-white"} (str emoji-count))
+                     ($ "div" {:class "text-xs text-gray-300"} "Emojis"))
+                  ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
+                     ($ "div" {:class "text-2xl font-bold text-white"} (if fav-emoji fav-emoji "-"))
+                     ($ "div" {:class "text-xs text-gray-300"} "Fav Emoji"))
+                  ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
+                     ($ "div" {:class "text-2xl font-bold text-white"} (str late-night-pct "%"))
+                     ($ "div" {:class "text-xs text-gray-300"} "Night Owl"))
+                  ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
+                     ($ "div" {:class "text-2xl font-bold text-white"} (str (js/Math.round (* sarcasm 100)) "%"))
+                     ($ "div" {:class "text-xs text-gray-300"} "Sarcasm")))
 
-          ;; Traits
-          (when (seq traits)
-            ($ "div" {:class "flex flex-wrap gap-2"}
-               (.map (to-array traits)
-                     (fn [trait]
-                       ($ "span" {:key trait
-                                  :class "bg-white/20 text-white px-3 py-1 rounded-full text-sm"}
-                          trait)))))
+               ;; Traits
+               (when (seq traits)
+                 ($ "div" {:class "flex flex-wrap gap-2"}
+                    (.map (to-array traits)
+                          (fn [trait]
+                            ($ "span" {:key trait
+                                       :class "bg-white/20 text-white px-3 py-1 rounded-full text-sm"}
+                               trait)))))
 
-          ;; 2025 stats
-          ($ "div" {:class "mt-4 text-center"}
-             ($ "div" {:class "text-gray-400 text-xs"} "2025")
-             ($ "div" {:class "text-white font-semibold"}
-                (.toLocaleString messages-2025) " messages this year"))
+               ;; 2025 stats
+               ($ "div" {:class "mt-4 text-center"}
+                  ($ "div" {:class "text-gray-400 text-xs"} "2025")
+                  ($ "div" {:class "text-white font-semibold"}
+                     (.toLocaleString messages-2025) " messages this year"))))
 
           ;; Tap hint
           (when on-close
             ($ "div" {:class "text-center text-gray-400 text-xs mt-4"} "Tap to close"))))))
 
 ;; Fullscreen profile modal
-(defn profile-fullscreen [{:keys [name profile show-quiz-rank? quiz-rank is-winner? on-close]}]
+(defn profile-fullscreen [{:keys [name profile show-quiz-rank? quiz-rank is-winner? show-stats? on-close]}]
   ($ "div" {:class "fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
             :on-click on-close}
      ($ "div" {:class "w-full max-w-sm"
@@ -1445,6 +1450,7 @@
                                  :show-quiz-rank? show-quiz-rank?
                                  :quiz-rank quiz-rank
                                  :is-winner? is-winner?
+                                 :show-stats? show-stats?
                                  :on-close on-close}))))
 
 ;; Profile viewer - shows user's own profile based on selected name
@@ -1474,7 +1480,8 @@
                                         :profile profile
                                         :show-quiz-rank? quiz-finished?
                                         :quiz-rank quiz-rank
-                                        :is-winner? is-winner?})))
+                                        :is-winner? is-winner?
+                                        :show-stats? quiz-finished?})))
          ;; Fallback if no name selected
          ($ "div" {:class "text-gray-400 text-sm italic"}
             "Select your name above to see your Wrapped profile"))
@@ -1485,6 +1492,7 @@
                                 :show-quiz-rank? quiz-finished?
                                 :quiz-rank quiz-rank
                                 :is-winner? is-winner?
+                                :show-stats? quiz-finished?
                                 :on-close #(set-fullscreen! false)})))))
 
 ;; Wrapped intro message
