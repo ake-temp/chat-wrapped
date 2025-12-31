@@ -793,13 +793,35 @@
 
 (defn get-sorted-scores []
   (let [scores (:scores @state)
-        participants (:participants @state)]
-    (->> scores
-         (map (fn [[client-id score]]
-                {:client-id client-id
-                 :name (get-in participants [client-id :name] "Unknown")
-                 :score score}))
-         (sort-by :score >))))
+        participants (:participants @state)
+        sorted (->> scores
+                    (map (fn [[client-id score]]
+                           {:client-id client-id
+                            :name (get-in participants [client-id :name] "Unknown")
+                            :score score}))
+                    (sort-by :score >))]
+    ;; Add ranks with ties handling
+    (loop [remaining sorted
+           current-rank 1
+           prev-score nil
+           same-rank-count 0
+           result []]
+      (if (empty? remaining)
+        result
+        (let [entry (first remaining)
+              score (:score entry)
+              ;; If same score as previous, keep same rank; otherwise advance
+              new-rank (if (= score prev-score)
+                         current-rank
+                         (+ current-rank same-rank-count))
+              new-same-count (if (= score prev-score)
+                               (inc same-rank-count)
+                               1)]
+          (recur (rest remaining)
+                 new-rank
+                 score
+                 new-same-count
+                 (conj result (assoc entry :rank new-rank))))))))
 
 
 
@@ -1342,13 +1364,14 @@
              ($ "div" {:class "text-yellow-300 font-bold mb-3"}
                 (if final "🏆 Final Scores" "📊 Current Scores"))
              ($ "div" {:class "space-y-2"}
-                (.map (to-array (map-indexed vector sorted-scores))
-                      (fn [[idx {:keys [name score]}]]
-                        (let [medal (case idx 0 "🥇" 1 "🥈" 2 "🥉" nil)
+                (.map (to-array sorted-scores)
+                      (fn [{:keys [name score rank]}]
+                        (let [medal (case rank 1 "🥇" 2 "🥈" 3 "🥉" nil)
                               photo-url (get profile-photos name)
-                              is-winner? (and final (zero? idx))]
+                              is-winner? (and final (= rank 1))]
                           ($ "div" {:key name :class "flex justify-between items-center"}
                              ($ "div" {:class "flex items-center gap-2 text-white"}
+                                ($ "span" {:class "w-6 text-center text-sm text-gray-400"} (str rank "."))
                                 (when medal ($ "span" {} medal))
                                 ($ "div" {:class "relative"}
                                    (when is-winner?
@@ -1465,14 +1488,9 @@
         photo-url (get profile-photos my-name)
         sorted-scores (get-sorted-scores)
         quiz-finished? (>= (:message-index @state) (- total-steps 1))
-        quiz-rank (when quiz-finished?
-                    (let [idx (->> sorted-scores
-                                   (map-indexed vector)
-                                   (filter #(= (:name (second %)) my-name))
-                                   first)]
-                      (when idx (inc (first idx)))))
-        winner-name (when quiz-finished? (:name (first sorted-scores)))
-        is-winner? (= my-name winner-name)]
+        my-entry (first (filter #(= (:name %) my-name) sorted-scores))
+        quiz-rank (when quiz-finished? (:rank my-entry))
+        is-winner? (and quiz-finished? (= quiz-rank 1))]
     ($ "div" {:class "py-2 pl-10"}
        (if (and my-name profile)
          ;; Show their profile card with tap to fullscreen
@@ -1504,21 +1522,16 @@
   (let [[selected-profile set-selected!] (useState nil)
         [fullscreen? set-fullscreen!] (useState false)
         sorted-scores (get-sorted-scores)
-        get-quiz-rank (fn [name]
-                        (let [idx (->> sorted-scores
-                                       (map-indexed vector)
-                                       (filter #(= (:name (second %)) name))
-                                       first)]
-                          (when idx (inc (first idx)))))
-        winner-name (:name (first sorted-scores))]
+        get-entry (fn [n] (first (filter #(= (:name %) n) sorted-scores)))]
     ($ "div" {:class "py-2 pl-10"}
        ($ "div" {:class "grid grid-cols-2 gap-2"}
           (.map (to-array participant-names)
                 (fn [name]
                   (let [photo-url (get profile-photos name)
                         profile (get wrapped-profiles name)
-                        quiz-rank (get-quiz-rank name)
-                        is-winner? (= name winner-name)]
+                        entry (get-entry name)
+                        quiz-rank (:rank entry)
+                        is-winner? (= quiz-rank 1)]
                     (when profile
                       ($ "button"
                          {:key name
@@ -1537,8 +1550,9 @@
        ;; Fullscreen modal
        (when (and fullscreen? selected-profile)
          (let [profile (get wrapped-profiles selected-profile)
-               quiz-rank (get-quiz-rank selected-profile)
-               is-winner? (= selected-profile winner-name)]
+               entry (get-entry selected-profile)
+               quiz-rank (:rank entry)
+               is-winner? (= quiz-rank 1)]
            ($ profile-fullscreen {:name selected-profile
                                   :profile profile
                                   :show-quiz-rank? true
