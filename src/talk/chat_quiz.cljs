@@ -1420,7 +1420,7 @@
                 ;; Crown for winner - larger with animation
                 (when is-winner?
                   ($ "div" {:class "absolute -top-5 left-1/2 -translate-x-1/2 text-4xl z-10 animate-bounce"
-                            :style {:animation-duration "2s"}} "👑"))
+                            :style {:animationDuration "2s"}} "👑"))
                 ;; Quiz rank badge - gradient style
                 (when (and show-quiz-rank? quiz-rank)
                   ($ "div" {:class "absolute -bottom-2 -right-2 bg-gradient-to-br from-yellow-400 to-amber-500 text-black w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm z-10 shadow-lg"}
