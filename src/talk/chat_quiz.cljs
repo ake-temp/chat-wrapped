@@ -1379,32 +1379,34 @@
                       (fn [{:keys [name score rank]}]
                         (let [medal (case rank 1 "🥇" 2 "🥈" 3 "🥉" nil)
                               photo-url (get profile-photos name)
-                              is-winner? (and final (= rank 1))]
-                          ($ "div" {:key name :class "flex justify-between items-center"}
+                              is-winner? (and final (= rank 1))
+                              row-class (if is-winner?
+                                          "flex justify-between items-center bg-yellow-500/10 -mx-2 px-2 py-1 rounded-lg"
+                                          "flex justify-between items-center")]
+                          ($ "div" {:key name :class row-class}
                              ($ "div" {:class "flex items-center gap-2 text-white"}
                                 ($ "span" {:class "w-6 text-center text-sm text-gray-400"} (str rank "."))
                                 (when medal ($ "span" {} medal))
                                 ($ "div" {:class "relative"}
                                    (when is-winner?
-                                     ($ "div" {:class "absolute -top-3 -right-1 text-sm rotate-12"} "👑"))
+                                     ($ "div" {:class "absolute -top-3 -right-1 text-base rotate-12"} "👑"))
                                    (if photo-url
                                      ($ "img" {:src photo-url
                                                :class (str "rounded-full object-cover " (if is-winner? "w-8 h-8" "w-6 h-6"))})
                                      ($ "div" {:class (str "rounded-full bg-[#2f2f2f] flex items-center justify-center text-xs "
                                                            (if is-winner? "w-8 h-8" "w-6 h-6"))}
                                         (first name))))
-                                ($ "span" {} name))
-                             ($ "span" {:class "font-bold text-yellow-400"} score)))))
+                                ($ "span" {:class (when is-winner? "font-semibold")} name))
+                             ($ "span" {:class (str "font-bold " (if is-winner? "text-yellow-300" "text-yellow-400"))} score)))))
                 (when (empty? sorted-scores)
                   ($ "div" {:class "text-gray-400 italic"} "No scores yet"))))))))
 
 ;; Wrapped Profile Card - Spotify Wrapped style
-(defn wrapped-profile-card [{:keys [name profile show-quiz-rank? quiz-rank is-winner? show-stats? on-close]}]
+(defn wrapped-profile-card [{:keys [name profile show-quiz-rank? quiz-rank is-winner? show-stats? for-screenshot?]}]
   (let [photo-url (get profile-photos name)
         {:keys [vibe vibe-desc total-messages messages-2025 avg-length emoji-count
                 fav-emoji late-night-pct sarcasm traits]} profile]
-    ($ "div" {:class "relative bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 rounded-2xl overflow-hidden"
-              :on-click on-close}
+    ($ "div" {:class "relative bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 rounded-2xl overflow-hidden shadow-xl shadow-purple-900/50"}
        ;; Background pattern
        ($ "div" {:class "absolute inset-0 opacity-20"
                  :style {:background-image "url('/background.svg')"
@@ -1415,18 +1417,19 @@
           ;; Header with photo and name
           ($ "div" {:class (str "flex items-start gap-4" (when show-stats? " mb-6"))}
              ($ "div" {:class "relative"}
-                ;; Crown for winner
+                ;; Crown for winner - larger with animation
                 (when is-winner?
-                  ($ "div" {:class "absolute -top-4 left-1/2 -translate-x-1/2 text-3xl z-10"} "👑"))
-                ;; Quiz rank badge
+                  ($ "div" {:class "absolute -top-5 left-1/2 -translate-x-1/2 text-4xl z-10 animate-bounce"
+                            :style {:animation-duration "2s"}} "👑"))
+                ;; Quiz rank badge - gradient style
                 (when (and show-quiz-rank? quiz-rank)
-                  ($ "div" {:class "absolute -bottom-2 -right-2 bg-yellow-500 text-black w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm z-10"}
+                  ($ "div" {:class "absolute -bottom-2 -right-2 bg-gradient-to-br from-yellow-400 to-amber-500 text-black w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm z-10 shadow-lg"}
                      (str "#" quiz-rank)))
-                ;; Profile photo
+                ;; Profile photo - better border
                 (if photo-url
                   ($ "img" {:src photo-url
-                            :class "w-24 h-24 rounded-full object-cover border-4 border-white/20"})
-                  ($ "div" {:class "w-24 h-24 rounded-full bg-white/20 flex items-center justify-center text-4xl font-bold text-white"}
+                            :class "w-24 h-24 rounded-full object-cover border-4 border-white/30 shadow-lg"})
+                  ($ "div" {:class "w-24 h-24 rounded-full bg-white/20 flex items-center justify-center text-4xl font-bold text-white border-4 border-white/30"}
                      (first name))))
              ;; Name and vibe
              ($ "div" {:class "flex-1 min-w-0"}
@@ -1435,10 +1438,15 @@
                 (when show-stats?
                   ($ "div" {:class "text-gray-300 text-sm"} vibe-desc))))
 
+          ;; Pre-quiz teaser when stats hidden
+          (when-not show-stats?
+            ($ "div" {:class "mt-4 text-center text-gray-400 text-sm italic"}
+               "More stats revealed after the quiz..."))
+
           ;; Stats grid - only shown after quiz
           (when show-stats?
             ($ "div" {}
-               ($ "div" {:class "grid grid-cols-3 gap-3 mb-6"}
+               ($ "div" {:class "grid grid-cols-3 gap-3 mb-4"}
                   ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
                      ($ "div" {:class "text-2xl font-bold text-white"} (.toLocaleString total-messages))
                      ($ "div" {:class "text-xs text-gray-300"} "Messages"))
@@ -1460,7 +1468,7 @@
 
                ;; Traits
                (when (seq traits)
-                 ($ "div" {:class "flex flex-wrap gap-2"}
+                 ($ "div" {:class "flex flex-wrap gap-2 mb-4"}
                     (.map (to-array traits)
                           (fn [trait]
                             ($ "span" {:key trait
@@ -1468,18 +1476,19 @@
                                trait)))))
 
                ;; 2025 stats
-               ($ "div" {:class "mt-4 text-center"}
+               ($ "div" {:class "text-center"}
                   ($ "div" {:class "text-gray-400 text-xs"} "2025")
                   ($ "div" {:class "text-white font-semibold"}
                      (.toLocaleString messages-2025) " messages this year"))))
 
-          ;; Tap hint
-          (when on-close
-            ($ "div" {:class "text-center text-gray-400 text-xs mt-4"} "Tap to close"))))))
+          ;; Watermark for screenshots
+          (when for-screenshot?
+            ($ "div" {:class "mt-4 pt-3 border-t border-white/10 text-center"}
+               ($ "div" {:class "text-gray-500 text-xs"} "Chat: Wrapped 2025")))))))
 
 ;; Fullscreen profile modal
 (defn profile-fullscreen [{:keys [name profile show-quiz-rank? quiz-rank is-winner? show-stats? on-close]}]
-  ($ "div" {:class "fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+  ($ "div" {:class "fixed inset-0 z-50 bg-black flex items-center justify-center p-4"
             :on-click on-close}
      ($ "div" {:class "w-full max-w-sm"
                :on-click (fn [e] (.stopPropagation e))}
@@ -1489,7 +1498,7 @@
                                  :quiz-rank quiz-rank
                                  :is-winner? is-winner?
                                  :show-stats? show-stats?
-                                 :on-close on-close}))))
+                                 :for-screenshot? true}))))
 
 ;; Profile viewer - shows user's own profile based on selected name
 (defn wrapped-profile-selector [{:keys [show-avatar? is-last? show-stats]}]
