@@ -1,8 +1,8 @@
 (ns talk.app
-  (:require ["reagami" :as reagami]
-            ["./entry.css"]
+  (:require ["./entry.css"]
             ["./ably.js" :as ably]
-            ["./chat_quiz.js" :as chat-quiz]))
+            ["./chat_quiz.js" :as chat-quiz]
+            ["./react_helper.js" :as r :refer [$ useAtom]]))
 
 
 ;; >> Configuration
@@ -24,25 +24,29 @@
 
 ;; >> App Component
 
-(defn app []
-  [chat-quiz/chat-quiz-ui])
-
-
-
-;; >> Render Loop
-
-(defn render []
-  (reagami/render (js/document.getElementById "app") [app]))
-
-(add-watch chat-quiz/state ::render (fn [_ _ _ _] (render)))
+(defn App []
+  ;; Subscribe to state changes
+  (useAtom chat-quiz/state)
+  (useAtom ably/state)
+  ;; Render the quiz UI
+  ($ chat-quiz/chat-quiz-ui))
 
 
 
 ;; >> Init
 
+(defonce root (atom nil))
+
 (defn init! []
-  (render)
+  ;; Create React root if not exists
+  (when-not @root
+    (reset! root (r/createRoot (js/document.getElementById "app"))))
+
+  ;; Render
+  (.render @root ($ App))
+
+  ;; Initialize services
   (ably/init! ABLY_API_KEY)
-  (chat-quiz/init! (= role :presenter)))
+  (chat-quiz/init!))
 
 (init!)

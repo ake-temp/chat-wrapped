@@ -6,7 +6,8 @@
     "ably": "^2.15.0",
     "bun-plugin-tailwind": "^0.1.2",
     "qrcode": "^1.5.4",
-    "reagami": "^0.0.36",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "squint-cljs": "^0.8.134"
   },
   "devDependencies": {
