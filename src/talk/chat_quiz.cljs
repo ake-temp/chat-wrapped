@@ -44,7 +44,7 @@
    "📞" "/stickers/telephone.webp"
    "🐧" "/stickers/penguin.webp"})
 
-;; Collage photos
+;; Collage photos (random selection)
 (def collage-photos
   ["/random_images/photo1.jpeg"
    "/random_images/photo2.jpeg"
@@ -52,6 +52,15 @@
    "/random_images/photo4.jpeg"
    "/random_images/photo5.jpeg"
    "/random_images/photo6.jpeg"])
+
+;; Holiday photos (Tenerife trip)
+(def holiday-photos
+  ["/holiday_photos/holiday1.jpeg"
+   "/holiday_photos/holiday2.jpeg"
+   "/holiday_photos/holiday3.jpeg"
+   "/holiday_photos/holiday4.jpeg"
+   "/holiday_photos/holiday5.jpeg"
+   "/holiday_photos/holiday6.jpeg"])
 
 ;; Reactions with final counts
 (def reaction-data
@@ -71,25 +80,25 @@
 ;; >> Quiz Data - All Messages
 
 (def quiz-messages
-  [;; ===== PHASE 2: WRAPPED STATS INTRO =====
+  [;; ===== WRAPPED STATS INTRO =====
 
    ;; Chat creation - Wrapped group
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :text :content "Chat was created on August 10th 2018 📆"}
    {:type :text :content "In that time we've had ~514,524 messages"}
-   {:type :text :content "190 messages per day!"}
+   {:type :text :content "190 messages per day!" :batch-with-next true}
    {:type :message-counter :target 514524 :duration 3000}
-   {:type :text :content "With 25,431 in 2025 alone"}
+   {:type :text :content "With 25,431 in 2025 alone" :batch-with-next true}
    {:type :message-counter :target 25431 :duration 2000}
-   {:type :text :content "On January 6th 2020 a tragedy happened"}
-   {:type :text :content "Chat history was purged"}
+   {:type :text :content "On January 1st 2020 a tragedy happened"}
+   {:type :text :content "Chat history was purged" :batch-with-next true}
    {:type :purge-graph :total 514524 :purged 180397}
    {:type :text :content "Archeologists continue to wonder at the history lost"}
    {:type :text :content "These are the earliest messages we have:" :show-avatar true}
 
    ;; Earliest messages from users
    {:type :user-header :sender "Zack" :batch-with-next true}
-   {:type :user-message :sender "Zack" :content "🙂" :style :emoji :show-avatar true}
+   {:type :emoji :content "🙂" :sender "Zack" :show-avatar true}
 
    {:type :user-header :sender "Oliver" :batch-with-next true}
    {:type :user-message :sender "Oliver" :content "It's been a while tbh" :show-avatar true}
@@ -105,43 +114,44 @@
 
    ;; Back to Wrapped
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Here's a link in case you want to bring back the memories"}
+   {:type :text :content "Here's a link in case you want to bring back the memories:"}
    {:type :link :content "https://t.me/c/1360175818/180399" :show-avatar true}
 
    ;; Stats we do have
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :text :content "In the history we *do* have we've seen:"}
-   {:type :text :content "1,866,926 Total words typed"}
+   {:type :text :content "1,866,926 Total words typed" :batch-with-next true}
    {:type :word-rotation}
-   {:type :text :content "12,499 Total stickers sent"}
+   {:type :text :content "12,499 Total stickers sent" :batch-with-next true}
    {:type :sticker-cloud}
-   {:type :text :content "10,199 Total photos sent"}
+   {:type :text :content "10,199 Total photos sent" :batch-with-next true}
    {:type :photo-collage}
    {:type :text-with-reactions :content "1,684 Total reactions" :show-avatar true}
 
-   ;; ===== ORIGINAL QUIZ CONTENT =====
+   ;; ===== NAME SELECTION =====
 
-   ;; Name selection
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :text :content "Welcome to Chat: Wrapped! 🎉"}
    {:type :text :content "First, select your name:"}
    {:type :name-select :id "name-select" :show-avatar true}
 
-   ;; Intro
+   ;; Quiz intro
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :text :content "Now let's see how well you know the Chat with a quiz 📊" :show-avatar true}
 
-   ;; Round 1
+   ;; ===== ROUND 1 =====
+
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :text :content "Round 1" :style :header}
    {:type :text :content "Let's start off with some basic stats" :show-avatar true}
 
    ;; Q1: Most messages
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Who has sent the most messages?" :show-avatar true}
+   {:type :text :content "Who has sent the most messages?" :show-avatar true :batch-with-next true}
    {:type :buttons
     :id "q1-messages"
-    :options ["Jack Crowson" "Jack Rowland" "James" "Zack" "Lee" "Oliver"]}
+    :options ["Jack Crowson" "Jack Rowland" "James" "Zack" "Lee" "Oliver"]
+    :show-photos true}
    {:type :reveal
     :id "q1-messages"
     :answer "Jack Crowson"
@@ -155,7 +165,7 @@
 
    ;; Q2: Most popular sticker
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Which is the most popular sticker?" :show-avatar true}
+   {:type :text :content "Which is the most popular sticker?" :show-avatar true :batch-with-next true}
    {:type :buttons
     :id "q2-sticker"
     :options ["😭🤦" "🤣" "💛" "😅" "🙏" "😭🙌" "🐧" "📞" "😆" "💙"]
@@ -178,91 +188,167 @@
 
    ;; Q3: Longest gap
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "How many hours was the largest gap in messages?" :show-avatar true}
-   {:type :buttons
-    :id "q3-gap"
-    :options ["4 hours" "22 hours" "45 hours" "83 hours"]}
-   {:type :reveal :id "q3-gap" :answer "45 hours"}
+   {:type :text :content "How many hours was the largest gap in messages?" :show-avatar true :batch-with-next true}
+   {:type :buttons :id "q3-gap" :options ["4 hours" "22 hours" "45 hours" "83 hours"]}
+   {:type :reveal :id "q3-gap" :answer "45 hours" :text "The longest gap was 45 hours!"}
    {:type :text :content "Can't even survive the weekend without a cheeky message" :show-avatar true}
 
    ;; Scores checkpoint
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Let's check in with the scores so far:" :style :header}
-   {:type :scores :show-avatar true}
+   {:type :text :content "Let's check in with the scores so far:" :show-avatar true}
+   {:type :scores}
 
-   ;; Round 2
+   ;; ===== ROUND 2 =====
+
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :text :content "Round 2" :style :header}
-   {:type :text :content "What do you really know about your chat buddies? 🤔"}
-   {:type :text :content "Guess who these messages are from:" :show-avatar true}
+   {:type :text :content "Next let's learn about the different chatters" :show-avatar true}
 
-   ;; Q4-7: Emoji guessing
+   ;; Q4: Emoji 😉
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Who's top emoji is:" :show-avatar true}
-   {:type :text :content "😭" :style :emoji}
+   {:type :text :content "Who's favourite emoji is this?" :show-avatar true :batch-with-next true}
+   {:type :emoji :content "😉" :batch-with-next true}
    {:type :buttons
     :id "q4-emoji1"
-    :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]}
-   {:type :reveal :id "q4-emoji1" :answer "Oliver" :show-avatar true}
+    :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]
+    :show-photos true}
+   {:type :reveal :id "q4-emoji1" :answer "Oliver" :text "The answer was Oliver!" :show-avatar true}
 
+   ;; Q5: Emoji 😛
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Who's top emoji is:" :show-avatar true}
-   {:type :text :content "😂" :style :emoji}
+   {:type :emoji :content "😛" :show-avatar true :batch-with-next true}
    {:type :buttons
     :id "q5-emoji2"
-    :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]}
-   {:type :reveal :id "q5-emoji2" :answer "Zack" :show-avatar true}
+    :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]
+    :show-photos true}
+   {:type :reveal :id "q5-emoji2" :answer "Zack" :text "The answer was Zack!" :show-avatar true}
 
+   ;; Q6: Emoji 💀
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Who's top emoji is:" :show-avatar true}
-   {:type :text :content "🎲" :style :emoji}
+   {:type :emoji :content "💀" :show-avatar true :batch-with-next true}
    {:type :buttons
     :id "q6-emoji3"
-    :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]}
-   {:type :reveal :id "q6-emoji3" :answer "Retrospectre" :show-avatar true}
+    :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]
+    :show-photos true}
+   {:type :reveal :id "q6-emoji3" :answer "Retrospectre" :text "The answer was Retrospectre!" :show-avatar true}
 
+   ;; Q7: Emoji 😂
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Who's top emoji is:" :show-avatar true}
-   {:type :text :content "💀" :style :emoji}
+   {:type :emoji :content "😂" :show-avatar true :batch-with-next true}
    {:type :buttons
     :id "q7-emoji4"
-    :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]}
-   {:type :reveal :id "q7-emoji4" :answer "Jaspreet" :show-avatar true}
+    :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]
+    :show-photos true}
+   {:type :reveal :id "q7-emoji4" :answer "Jaspreet" :text "The answer was Jaspreet!" :show-avatar true}
 
-   ;; Q8-10: Phrase guessing
+   ;; Catch phrases intro
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Now guess who says these phrases the most:" :show-avatar true}
+   {:type :text :content "Next, did you know that you have catch phrases?"}
+   {:type :text :content "Who's catch phrases are these:" :show-avatar true}
 
+   ;; Q8: Catch phrase - yum, toil toil toil
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "\"Haha\"" :style :quote}
+   {:type :text :content "\"yum\", \"toil toil toil\"" :style :quote :show-avatar true :batch-with-next true}
    {:type :buttons
     :id "q8-phrase1"
-    :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]}
-   {:type :reveal :id "q8-phrase1" :answer "Jaspreet" :show-avatar true}
+    :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]
+    :show-photos true}
+   {:type :reveal :id "q8-phrase1" :answer "Jack R" :text "That's right, it was Jack Rowland!" :show-avatar true}
 
+   ;; Q9: Catch phrase - matey, super fair
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "\"Lol\"" :style :quote}
+   {:type :text :content "\"matey\", \"super fair\"" :style :quote :show-avatar true :batch-with-next true}
    {:type :buttons
     :id "q9-phrase2"
-    :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]}
-   {:type :reveal :id "q9-phrase2" :answer "James" :show-avatar true}
+    :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]
+    :show-photos true}
+   {:type :reveal :id "q9-phrase2" :answer "Samir" :text "It was Samir!" :show-avatar true}
 
+   ;; Q10: Catch phrase - wanna play, fakes
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "\"Pog\"" :style :quote}
+   {:type :text :content "\"wanna play\", \"fakes\"" :style :quote :show-avatar true :batch-with-next true}
    {:type :buttons
     :id "q10-phrase3"
-    :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]}
-   {:type :reveal :id "q10-phrase3" :answer "Jack C" :show-avatar true}
+    :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]
+    :show-photos true}
+   {:type :reveal :id "q10-phrase3" :answer "James" :text "Who else but James!" :show-avatar true}
 
-   ;; Final scores
+   ;; Q11: Hard one - Tiananmen Square
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "And the final scores are..." :style :header}
-   {:type :scores :final true :show-avatar true}
+   {:type :text :content "Now for a hard one:"}
+   {:type :text :content "\"Tiananmen Square\"" :style :quote :show-avatar true :batch-with-next true}
+   {:type :buttons
+    :id "q11-phrase4"
+    :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]
+    :show-photos true}
+   {:type :reveal :id "q11-phrase4" :answer "Liam" :text "The answer was of course… Liam!" :show-avatar true}
+
+   ;; Scores checkpoint
+   {:type :sender-header :sender "Wrapped" :batch-with-next true}
+   {:type :text :content "Let's check in with scores now:" :show-avatar true}
+   {:type :scores}
+
+   ;; ===== ROUND 3 =====
+
+   {:type :sender-header :sender "Wrapped" :batch-with-next true}
+   {:type :text :content "Round 3" :style :header}
+   {:type :text :content "A lot has happened over the years"}
+   {:type :text :content "And you can see it marked in the history of our chat" :show-avatar true}
+
+   ;; Q12: Most messages day
+   {:type :sender-header :sender "Wrapped" :batch-with-next true}
+   {:type :text :content "What happened on the day with the most messages?" :show-avatar true :batch-with-next true}
+   {:type :buttons
+    :id "q12-event1"
+    :options ["A YuGiOh tournament" "A Wedding" "Gamestop" "The birth of a child"]}
+   {:type :reveal :id "q12-event1" :answer "Gamestop" :text "The answer was of course: Gamestop in January 2021" :show-avatar true}
+   {:type :text :content "Why would you expect anything else?"}
+   {:type :text :content "There were 1402 messages on that day"}
+   {:type :link :content "https://t.me/c/1360175818/289350" :show-avatar true}
+
+   ;; Q13: Most messages 2025
+   {:type :sender-header :sender "Wrapped" :batch-with-next true}
+   {:type :text :content "2021 was a long time ago though, much more exciting things have happened this year"}
+   {:type :text :content "What happened on the day with the most messages in 2025?" :show-avatar true :batch-with-next true}
+   {:type :buttons
+    :id "q13-event2"
+    :options ["A YuGiOh Tournament" "A Wedding" "Gamestop (again)" "The birth of a child"]}
+   {:type :reveal :id "q13-event2" :answer "A YuGiOh Tournament" :text "In February this year 662 messages were sent about a YuGiOh Tournament" :show-avatar true}
+   {:type :link :content "https://t.me/c/1360175818/492975"}
+   {:type :text :content "Never change" :show-avatar true}
+
+   ;; Q14: Most photos
+   {:type :sender-header :sender "Wrapped" :batch-with-next true}
+   {:type :text :content "Ok, next"}
+   {:type :text :content "What happened the day the most photos were shared?" :show-avatar true :batch-with-next true}
+   {:type :buttons
+    :id "q14-event3"
+    :options ["Holiday Photos" "A Wedding" "MTG Cards" "The birth of a child"]}
+   {:type :reveal :id "q14-event3" :answer "Holiday Photos" :text "It was uncomfortably close but Holiday Photos wins" :show-avatar true}
+   {:type :text :content "This was the trip to Tenerife" :batch-with-next true}
+   {:type :holiday-collage}
+   {:type :link :content "https://t.me/c/1360175818/367499" :show-avatar true}
+
+   ;; Q15: Most participants
+   {:type :sender-header :sender "Wrapped" :batch-with-next true}
+   {:type :text :content "What conversations had the most participants?" :show-avatar true :batch-with-next true}
+   {:type :buttons
+    :id "q15-event4"
+    :options ["Toil posting" "A Wedding" "Gamestop (for real)" "The birth of a child"]}
+   {:type :reveal :id "q15-event4" :answer "The birth of a child" :text "This was genuinely a tie between the birth of Leo and Amelia" :show-avatar true}
+   {:type :link :content "https://t.me/c/1360175818/505946"}
+   {:type :link :content "https://t.me/c/1360175818/507465"}
+   {:type :text :content "Thank god we've found something normal" :show-avatar true}
+
+   ;; ===== FINAL SCORES =====
+
+   {:type :sender-header :sender "Wrapped" :batch-with-next true}
+   {:type :text :content "And our final scores:" :style :header :show-avatar true}
+   {:type :scores :final true}
 
    ;; Outro
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Thanks for playing Chat: Wrapped! 🎊"}
-   {:type :text :content "See you next year! 👋" :show-avatar true}])
+   {:type :text :content "Thanks to everyone for participating!" :show-avatar true}])
 
 
 
@@ -476,6 +562,23 @@
            ($ "a" {:href content :target "_blank" :class "text-blue-400 hover:underline text-sm break-all"}
               content)))))
 
+;; Standalone large emoji (no message box)
+;; If sender is provided, shows user's avatar, otherwise shows Wrapped avatar
+(defn emoji-message [{:keys [content sender show-avatar?]}]
+  (let [photo-url (when sender (get profile-photos sender))]
+    ($ "div" {:class "flex items-end gap-2 mb-0.5"}
+       ($ "div" {:class "w-8 shrink-0"}
+          (if sender
+            (if photo-url
+              ($ "img" {:src photo-url
+                        :class (str "w-8 h-8 rounded-full object-cover" (when-not show-avatar? " invisible"))})
+              ($ "div" {:class (str "w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-bold"
+                                    (when-not show-avatar? " invisible"))}
+                 (first sender)))
+            ($ "div" {:class (avatar-class show-avatar?)} "W")))
+       ($ "div" {:class "text-7xl py-2"}
+          content))))
+
 ;; User colors
 (def user-colors
   {"Zack" "text-blue-400"
@@ -652,6 +755,18 @@
                     (fn [[idx photo-url]]
                       ($ "img" {:key idx :src photo-url :class "w-full aspect-square object-cover rounded"}))))))))
 
+;; Holiday photo collage
+(defn holiday-collage [{:keys [show-avatar?]}]
+  ($ "div" {:class "flex items-end gap-2 mb-0.5"}
+     ($ "div" {:class "w-8 shrink-0"}
+        ($ "div" {:class (avatar-class show-avatar?)} "W"))
+     ($ "div" {:class "flex-1 min-w-0"}
+        ($ "div" {:class "rounded-2xl bg-[#242424] p-2"}
+           ($ "div" {:class "grid grid-cols-3 gap-1"}
+              (.map (to-array (map-indexed vector holiday-photos))
+                    (fn [[idx photo-url]]
+                      ($ "img" {:key idx :src photo-url :class "w-full aspect-square object-cover rounded"}))))))))
+
 ;; Reaction ticker
 (defn reaction-ticker [{:keys [show-avatar? is-last?]}]
   (let [duration 3000
@@ -757,7 +872,7 @@
               ($ "span" {} "Welcome, " my-name "!")))))))
 
 ;; Button grid for answers
-(defn button-grid [{:keys [id options labels is-last? current-answer]}]
+(defn button-grid [{:keys [id options labels is-last? current-answer show-photos]}]
   (let [is-current? is-last?
         locked? (not is-current?)
         ;; Use passed current-answer or fetch fresh
@@ -770,7 +885,8 @@
           (.map (to-array shuffled-pairs)
                 (fn [{:keys [option label]}]
                   (let [selected? (= current-answer option)
-                        sticker-url (get sticker-images option)]
+                        sticker-url (get sticker-images option)
+                        photo-url (when show-photos (get profile-photos label))]
                     ($ "button"
                        {:key option
                         :class (str "rounded-xl text-sm font-medium transition-all "
@@ -782,9 +898,19 @@
                                         "bg-[#242424] text-white hover:bg-[#2f2f2f]")))
                         :disabled (or locked? is-controller?)
                         :on-click (fn [] (when-not (or locked? is-controller?) (submit-answer! id option)))}
-                       (if sticker-url
+                       (cond
+                         sticker-url
                          ($ "img" {:src sticker-url :class "w-12 h-12 object-contain"})
-                         label))))))
+
+                         show-photos
+                         ($ "div" {:class "flex items-center gap-2"}
+                            (if photo-url
+                              ($ "img" {:src photo-url :class "w-6 h-6 rounded-full object-cover"})
+                              ($ "div" {:class "w-6 h-6 rounded-full bg-[#3a3a3a] flex items-center justify-center text-xs"}
+                                 (first label)))
+                            ($ "span" {} label))
+
+                         :else label))))))
        (when (some? current-answer)
          ($ "div" {:class (str "text-center text-sm mt-2 " (if is-current? "text-blue-400" "text-green-400"))}
             (if is-current? "Tap to change" "Answer submitted!")))
@@ -927,6 +1053,7 @@
       :sender-header ($ sender-header props)
       :user-header ($ user-header props)
       :text ($ text-message props)
+      :emoji ($ emoji-message props)
       :link ($ link-message props)
       :name-select ($ name-select props)
       :buttons ($ button-grid (merge props {:current-answer (my-answer (:id msg))}))
@@ -939,6 +1066,7 @@
       :word-rotation ($ word-rotation props)
       :sticker-cloud ($ sticker-cloud props)
       :photo-collage ($ photo-collage props)
+      :holiday-collage ($ holiday-collage props)
       :reaction-ticker ($ reaction-ticker props)
       :text-with-reactions ($ text-with-reactions props)
       nil)))
@@ -1009,6 +1137,7 @@
                  :sender-header (str "Header: " (:sender next-msg))
                  :user-header (str "User: " (:sender next-msg))
                  :text (:content next-msg)
+                 :emoji (str "Emoji: " (:content next-msg))
                  :buttons (str "Buttons: " (str/join ", " (take 3 (:options next-msg))) "...")
                  :input "Number input"
                  :reveal (str "Reveal: " (:answer next-msg))
@@ -1020,6 +1149,7 @@
                  :word-rotation "Word rotation"
                  :sticker-cloud "Sticker cloud"
                  :photo-collage "Photo collage"
+                 :holiday-collage "Holiday collage"
                  :reaction-ticker "Reaction ticker"
                  :text-with-reactions (str (:content next-msg) " + reactions")
                  :user-message (str (:sender next-msg) ": " (:content next-msg))
