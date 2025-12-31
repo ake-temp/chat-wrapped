@@ -472,7 +472,7 @@
    ;; ===== ROUND 1 =====
 
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Round 1" :style :header}
+   {:type :text :content "Round 1" :text-style :header}
    {:type :text :content "Let's start off with some basic stats" :show-avatar true}
 
    ;; Q1: Most messages
@@ -531,7 +531,7 @@
    ;; ===== ROUND 2 =====
 
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Round 2" :style :header}
+   {:type :text :content "Round 2" :text-style :header}
    {:type :text :content "Next let's learn about the different chatters" :show-avatar true}
 
    ;; Q4: Emoji 😉
@@ -578,7 +578,7 @@
 
    ;; Q8: Catch phrase - yum, toil toil toil
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "\"yum\", \"toil toil toil\"" :style :quote :show-avatar true :batch-with-next true}
+   {:type :text :content "\"yum\", \"toil toil toil\"" :text-style :quote :show-avatar true :batch-with-next true}
    {:type :buttons
     :id "q8-phrase1"
     :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]
@@ -587,7 +587,7 @@
 
    ;; Q9: Catch phrase - matey, super fair
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "\"matey\", \"super fair\"" :style :quote :show-avatar true :batch-with-next true}
+   {:type :text :content "\"matey\", \"super fair\"" :text-style :quote :show-avatar true :batch-with-next true}
    {:type :buttons
     :id "q9-phrase2"
     :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]
@@ -596,7 +596,7 @@
 
    ;; Q10: Catch phrase - wanna play, fakes
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "\"wanna play\", \"fakes\"" :style :quote :show-avatar true :batch-with-next true}
+   {:type :text :content "\"wanna play\", \"fakes\"" :text-style :quote :show-avatar true :batch-with-next true}
    {:type :buttons
     :id "q10-phrase3"
     :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]
@@ -606,7 +606,7 @@
    ;; Q11: Hard one - Tiananmen Square
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :text :content "Now for a hard one:"}
-   {:type :text :content "\"Tiananmen Square\"" :style :quote :show-avatar true :batch-with-next true}
+   {:type :text :content "\"Tiananmen Square\"" :text-style :quote :show-avatar true :batch-with-next true}
    {:type :buttons
     :id "q11-phrase4"
     :options ["Oliver" "Zack" "Retrospectre" "Jaspreet" "James" "Jack C" "Jack R" "Samir" "Lee" "Liam"]
@@ -621,7 +621,7 @@
    ;; ===== ROUND 3 =====
 
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "Round 3" :style :header}
+   {:type :text :content "Round 3" :text-style :header}
    {:type :text :content "A lot has happened over the years"}
    {:type :text :content "And you can see it marked in the history of our chat" :show-avatar true}
 
@@ -674,7 +674,7 @@
    ;; ===== FINAL SCORES =====
 
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
-   {:type :text :content "And our final scores:" :style :header :show-avatar true}
+   {:type :text :content "And our final scores:" :text-style :header :show-avatar true}
    {:type :scores :final true}
 
    ;; ===== FINAL WRAPPED PROFILES =====
@@ -899,20 +899,20 @@
           "W"))))
 
 ;; Text message
-(defn text-message [{:keys [content style show-avatar?]}]
-  (let [sticker-url (when (= style :emoji) (get sticker-images content))]
+(defn text-message [{:keys [content text-style show-avatar?]}]
+  (let [sticker-url (when (= text-style "emoji") (get sticker-images content))
+        style-class (cond
+                      (= text-style "header") "bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg"
+                      (= text-style "emoji") "bg-transparent text-6xl text-center py-4"
+                      (= text-style "quote") "bg-[#242424] text-gray-200 italic"
+                      :else "bg-[#242424] text-white")]
     ($ "div" {:class "flex items-end gap-2 mb-0.5"}
        ($ "div" {:class "w-8 shrink-0"}
           ($ "div" {:class (avatar-class show-avatar?)} "W"))
        ($ "div" {:class "min-w-0"}
           (if sticker-url
             ($ "img" {:src sticker-url :class "w-32 h-32 object-contain"})
-            ($ "div" {:class (str "rounded-2xl px-4 py-2 inline-block "
-                                  (case style
-                                    :header "bg-purple-900/50 text-purple-200 font-bold text-lg"
-                                    :emoji "bg-transparent text-6xl text-center py-4"
-                                    :quote "bg-[#242424] text-gray-200 italic"
-                                    "bg-[#242424] text-white"))}
+            ($ "div" {:class (str "rounded-2xl px-4 py-2 inline-block " style-class)}
                content))))))
 
 ;; Link message
