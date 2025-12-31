@@ -17,6 +17,328 @@
    "Retrospectre" "Samir" "Jaspreet" "Liam" "Georgia" "Mariana"
    "Jack McMillan" "Alice" "Jess" "Aidan"])
 
+;; Wrapped profile data from vibe.md analysis
+(def wrapped-profiles
+  {"Jack Crowson"
+   {:vibe "The Chat Engine"
+    :vibe-desc "Ranked #1 in message volume with 74,441 messages."
+    :total-messages 74441
+    :messages-2025 8201
+    :avg-length 5.1
+    :emoji-count 1150
+    :fav-emoji "👀"
+    :fav-emoji-count 146
+    :sticker-count 6821
+    :fav-sticker "🤣"
+    :fav-sticker-count 1128
+    :morning-pct 8.6
+    :late-night-pct 4.1
+    :questions 4187
+    :links 643
+    :reactions-received 192
+    :sarcasm 0.75
+    :traits ["Prolific" "Brief" "Sticker Fan" "Starter"]}
+
+   "Jack Rowland"
+   {:vibe "Conversation Catalyst"
+    :vibe-desc "Starts 34.7% of conversations - always getting things going."
+    :total-messages 72521
+    :messages-2025 3903
+    :avg-length 5.6
+    :emoji-count 418
+    :fav-emoji "👀"
+    :fav-emoji-count 32
+    :sticker-count 4300
+    :fav-sticker "💛"
+    :fav-sticker-count 689
+    :morning-pct 11.6
+    :late-night-pct 3.1
+    :questions 2795
+    :links 955
+    :reactions-received 261
+    :sarcasm 0.72
+    :traits ["Prolific" "Sticker Fan" "Starter"]}
+
+   "James"
+   {:vibe "Volume King"
+    :vibe-desc "Ranked #3 in message volume with 43,574 messages. Often online late (11% late night)."
+    :total-messages 43574
+    :messages-2025 3929
+    :avg-length 6.1
+    :emoji-count 313
+    :fav-emoji "✅"
+    :fav-emoji-count 74
+    :sticker-count 483
+    :fav-sticker "🤔"
+    :fav-sticker-count 82
+    :morning-pct 3.2
+    :late-night-pct 10.9
+    :questions 2600
+    :links 710
+    :reactions-received 193
+    :sarcasm 0.76
+    :traits ["Prolific" "Night Owl" "Starter"]}
+
+   "Zack"
+   {:vibe "Prolific Poster"
+    :vibe-desc "Ranked #4 in message volume with 43,102 messages."
+    :total-messages 43102
+    :messages-2025 1512
+    :avg-length 6.4
+    :emoji-count 816
+    :fav-emoji "😛"
+    :fav-emoji-count 180
+    :sticker-count 323
+    :fav-sticker "💛"
+    :fav-sticker-count 81
+    :morning-pct 3.5
+    :late-night-pct 7.5
+    :questions 3270
+    :links 671
+    :reactions-received 180
+    :sarcasm 0.77
+    :traits ["Prolific" "Starter"]}
+
+   "Lee"
+   {:vibe "Message Machine"
+    :vibe-desc "Ranked #5 in message volume with 20,940 messages."
+    :total-messages 20940
+    :messages-2025 908
+    :avg-length 7.1
+    :emoji-count 461
+    :fav-emoji "😭"
+    :fav-emoji-count 47
+    :sticker-count 156
+    :fav-sticker "💛"
+    :fav-sticker-count 28
+    :morning-pct 5.5
+    :late-night-pct 8.9
+    :questions 2377
+    :links 187
+    :reactions-received 125
+    :sarcasm 0.73
+    :traits ["Balanced"]}
+
+   "Oliver"
+   {:vibe "The Flood"
+    :vibe-desc "Ranked #6 in message volume with 18,458 messages. Highly sarcastic (score: 0.82)."
+    :total-messages 18458
+    :messages-2025 451
+    :avg-length 6.3
+    :emoji-count 1407
+    :fav-emoji "😉"
+    :fav-emoji-count 205
+    :sticker-count 154
+    :fav-sticker "🤔"
+    :fav-sticker-count 31
+    :morning-pct 6.0
+    :late-night-pct 5.8
+    :questions 2642
+    :links 223
+    :reactions-received 111
+    :sarcasm 0.82
+    :traits ["Balanced"]}
+
+   "Retrospectre"
+   {:vibe "The Wordsmith"
+    :vibe-desc "Ranked #3 for message length with 7.5 words per message on average. Often online late (10% late night)."
+    :total-messages 9773
+    :messages-2025 3126
+    :avg-length 7.5
+    :emoji-count 475
+    :fav-emoji "💀"
+    :fav-emoji-count 93
+    :sticker-count 44
+    :fav-sticker "💛"
+    :fav-sticker-count 6
+    :morning-pct 6.8
+    :late-night-pct 10.2
+    :questions 906
+    :links 78
+    :reactions-received 71
+    :sarcasm 0.76
+    :traits ["Wordsmith" "Night Owl"]}
+
+   "Samir"
+   {:vibe "Sticker Royalty"
+    :vibe-desc "Top sticker user with 1.1% of messages being stickers."
+    :total-messages 8327
+    :messages-2025 1881
+    :avg-length 6.3
+    :emoji-count 7
+    :fav-emoji "☆"
+    :fav-emoji-count 2
+    :sticker-count 94
+    :fav-sticker "💛"
+    :fav-sticker-count 11
+    :morning-pct 5.9
+    :late-night-pct 3.9
+    :questions 404
+    :links 40
+    :reactions-received 133
+    :sarcasm 0.74
+    :traits ["Sticker Fan"]}
+
+   "Jaspreet"
+   {:vibe "Essay Writer"
+    :vibe-desc "Ranked #4 for message length with 7.4 words per message on average. Highly sarcastic (score: 0.85)."
+    :total-messages 6316
+    :messages-2025 667
+    :avg-length 7.4
+    :emoji-count 871
+    :fav-emoji "😂"
+    :fav-emoji-count 174
+    :sticker-count 57
+    :fav-sticker "💛"
+    :fav-sticker-count 9
+    :morning-pct 6.9
+    :late-night-pct 7.8
+    :questions 1192
+    :links 83
+    :reactions-received 140
+    :sarcasm 0.85
+    :traits ["Wordsmith" "Expressive"]}
+
+   "Liam"
+   {:vibe "Visual Communicator"
+    :vibe-desc "Top sticker user with 1.0% of messages being stickers."
+    :total-messages 4322
+    :messages-2025 496
+    :avg-length 6.5
+    :emoji-count 12
+    :fav-emoji "🙂"
+    :fav-emoji-count 6
+    :sticker-count 45
+    :fav-sticker "💛"
+    :fav-sticker-count 10
+    :morning-pct 5.0
+    :late-night-pct 6.9
+    :questions 346
+    :links 50
+    :reactions-received 107
+    :sarcasm 0.77
+    :traits ["Balanced"]}
+
+   "Georgia"
+   {:vibe "Thoughtful One"
+    :vibe-desc "Ranked #2 for message length with 8.2 words per message on average. Heavy emoji user (0.50/msg). Highly sarcastic (score: 0.91)."
+    :total-messages 337
+    :messages-2025 166
+    :avg-length 8.2
+    :emoji-count 168
+    :fav-emoji "😊"
+    :fav-emoji-count 17
+    :sticker-count 0
+    :fav-sticker nil
+    :fav-sticker-count 0
+    :morning-pct 8.6
+    :late-night-pct 3.6
+    :questions 113
+    :links 9
+    :reactions-received 52
+    :sarcasm 0.91
+    :traits ["Wordsmith" "Expressive" "Sarcastic"]}
+
+   "Mariana"
+   {:vibe "Emoji Royalty"
+    :vibe-desc "Ranked #3 in emoji usage with 0.33 emoji per message. Highly sarcastic (score: 0.89)."
+    :total-messages 108
+    :messages-2025 86
+    :avg-length 7.2
+    :emoji-count 36
+    :fav-emoji "😂"
+    :fav-emoji-count 11
+    :sticker-count 0
+    :fav-sticker nil
+    :fav-sticker-count 0
+    :morning-pct 7.4
+    :late-night-pct 1.9
+    :questions 26
+    :links 0
+    :reactions-received 37
+    :sarcasm 0.89
+    :traits ["Expressive"]}
+
+   "Jack McMillan"
+   {:vibe "The Sticker"
+    :vibe-desc "Top sticker user with 13.0% of messages being stickers."
+    :total-messages 100
+    :messages-2025 31
+    :avg-length 4.4
+    :emoji-count 1
+    :fav-emoji "😎"
+    :fav-emoji-count 1
+    :sticker-count 13
+    :fav-sticker "🟠"
+    :fav-sticker-count 4
+    :morning-pct 0.0
+    :late-night-pct 1.0
+    :questions 4
+    :links 0
+    :reactions-received 8
+    :sarcasm 0.79
+    :traits ["Brief" "Sticker Fan"]}
+
+   "Alice"
+   {:vibe "Sarcasm Champion"
+    :vibe-desc "Ranked #2 in sarcasm score (0.93) - certified roaster."
+    :total-messages 73
+    :messages-2025 61
+    :avg-length 7.4
+    :emoji-count 6
+    :fav-emoji "🎉"
+    :fav-emoji-count 2
+    :sticker-count 0
+    :fav-sticker nil
+    :fav-sticker-count 0
+    :morning-pct 1.4
+    :late-night-pct 4.1
+    :questions 2
+    :links 1
+    :reactions-received 36
+    :sarcasm 0.93
+    :traits ["Selective" "Sarcastic"]}
+
+   "Jess"
+   {:vibe "Expressive One"
+    :vibe-desc "Ranked #1 in emoji usage with 0.92 emoji per message. Highly sarcastic (score: 0.90)."
+    :total-messages 26
+    :messages-2025 11
+    :avg-length 5.2
+    :emoji-count 24
+    :fav-emoji "🥳"
+    :fav-emoji-count 3
+    :sticker-count 0
+    :fav-sticker nil
+    :fav-sticker-count 0
+    :morning-pct 7.7
+    :late-night-pct 0.0
+    :questions 4
+    :links 0
+    :reactions-received 10
+    :sarcasm 0.90
+    :traits ["Selective" "Brief" "Expressive" "Sarcastic"]}
+
+   "Aidan"
+   {:vibe "The Verbose"
+    :vibe-desc "Ranked #1 for message length with 20.5 words per message on average. Never uses emoji. Highly sarcastic (score: 0.99)."
+    :total-messages 2
+    :messages-2025 2
+    :avg-length 20.5
+    :emoji-count 0
+    :fav-emoji nil
+    :fav-emoji-count 0
+    :sticker-count 0
+    :fav-sticker nil
+    :fav-sticker-count 0
+    :morning-pct 50.0
+    :late-night-pct 0.0
+    :questions 0
+    :links 0
+    :reactions-received 1
+    :sarcasm 0.99
+    :traits ["Selective" "Wordsmith" "Zero Emoji" "Sarcastic"]}})
+
 ;; Profile photo mappings (name -> filename)
 (def profile-photos
   {"Jack Crowson" "/profile_photos/Jack_Crowson.jpg"
@@ -134,6 +456,12 @@
    {:type :text :content "Welcome to Chat: Wrapped! 🎉"}
    {:type :text :content "First, select your name:"}
    {:type :name-select :id "name-select" :show-avatar true}
+
+   ;; ===== WRAPPED PROFILES =====
+
+   {:type :sender-header :sender "Wrapped" :batch-with-next true}
+   {:type :wrapped-intro :show-avatar true}
+   {:type :wrapped-profiles :show-avatar true}
 
    ;; Quiz intro
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
@@ -345,6 +673,12 @@
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :text :content "And our final scores:" :style :header :show-avatar true}
    {:type :scores :final true}
+
+   ;; ===== FINAL WRAPPED PROFILES =====
+
+   {:type :sender-header :sender "Wrapped" :batch-with-next true}
+   {:type :text :content "Now check out your updated Wrapped profile with your quiz ranking!" :show-avatar true}
+   {:type :wrapped-profiles :show-avatar true}
 
    ;; Outro
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
@@ -1024,6 +1358,145 @@
                 (when (empty? sorted-scores)
                   ($ "div" {:class "text-gray-400 italic"} "No scores yet"))))))))
 
+;; Wrapped Profile Card - Spotify Wrapped style
+(defn wrapped-profile-card [{:keys [name profile show-quiz-rank? quiz-rank is-winner? on-close]}]
+  (let [photo-url (get profile-photos name)
+        {:keys [vibe vibe-desc total-messages messages-2025 avg-length emoji-count
+                fav-emoji late-night-pct sarcasm traits]} profile]
+    ($ "div" {:class "relative bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 rounded-2xl overflow-hidden"
+              :on-click on-close}
+       ;; Background pattern
+       ($ "div" {:class "absolute inset-0 opacity-20"
+                 :style {:background-image "url('/background.svg')"
+                         :background-repeat "repeat"
+                         :filter "invert(1)"}})
+       ;; Content
+       ($ "div" {:class "relative p-6"}
+          ;; Header with photo and name
+          ($ "div" {:class "flex items-start gap-4 mb-6"}
+             ($ "div" {:class "relative"}
+                ;; Crown for winner
+                (when is-winner?
+                  ($ "div" {:class "absolute -top-4 left-1/2 -translate-x-1/2 text-3xl z-10"} "👑"))
+                ;; Quiz rank badge
+                (when (and show-quiz-rank? quiz-rank)
+                  ($ "div" {:class "absolute -bottom-2 -right-2 bg-yellow-500 text-black w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm z-10"}
+                     (str "#" quiz-rank)))
+                ;; Profile photo
+                (if photo-url
+                  ($ "img" {:src photo-url
+                            :class "w-24 h-24 rounded-full object-cover border-4 border-white/20"})
+                  ($ "div" {:class "w-24 h-24 rounded-full bg-white/20 flex items-center justify-center text-4xl font-bold text-white"}
+                     (first name))))
+             ;; Name and vibe
+             ($ "div" {:class "flex-1 min-w-0"}
+                ($ "div" {:class "text-white text-2xl font-bold mb-1 truncate"} name)
+                ($ "div" {:class "text-purple-300 text-lg font-semibold mb-1"} vibe)
+                ($ "div" {:class "text-gray-300 text-sm"} vibe-desc)))
+
+          ;; Stats grid
+          ($ "div" {:class "grid grid-cols-3 gap-3 mb-6"}
+             ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
+                ($ "div" {:class "text-2xl font-bold text-white"} (.toLocaleString total-messages))
+                ($ "div" {:class "text-xs text-gray-300"} "Messages"))
+             ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
+                ($ "div" {:class "text-2xl font-bold text-white"} avg-length)
+                ($ "div" {:class "text-xs text-gray-300"} "Words/msg"))
+             ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
+                ($ "div" {:class "text-2xl font-bold text-white"} (str emoji-count))
+                ($ "div" {:class "text-xs text-gray-300"} "Emojis"))
+             ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
+                ($ "div" {:class "text-2xl font-bold text-white"} (if fav-emoji fav-emoji "-"))
+                ($ "div" {:class "text-xs text-gray-300"} "Fav Emoji"))
+             ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
+                ($ "div" {:class "text-2xl font-bold text-white"} (str late-night-pct "%"))
+                ($ "div" {:class "text-xs text-gray-300"} "Night Owl"))
+             ($ "div" {:class "bg-white/10 rounded-xl p-3 text-center"}
+                ($ "div" {:class "text-2xl font-bold text-white"} (str (js/Math.round (* sarcasm 100)) "%"))
+                ($ "div" {:class "text-xs text-gray-300"} "Sarcasm")))
+
+          ;; Traits
+          (when (seq traits)
+            ($ "div" {:class "flex flex-wrap gap-2"}
+               (.map (to-array traits)
+                     (fn [trait]
+                       ($ "span" {:key trait
+                                  :class "bg-white/20 text-white px-3 py-1 rounded-full text-sm"}
+                          trait)))))
+
+          ;; 2025 stats
+          ($ "div" {:class "mt-4 text-center"}
+             ($ "div" {:class "text-gray-400 text-xs"} "2025")
+             ($ "div" {:class "text-white font-semibold"}
+                (.toLocaleString messages-2025) " messages this year"))
+
+          ;; Tap hint
+          (when on-close
+            ($ "div" {:class "text-center text-gray-400 text-xs mt-4"} "Tap to close"))))))
+
+;; Fullscreen profile modal
+(defn profile-fullscreen [{:keys [name profile show-quiz-rank? quiz-rank is-winner? on-close]}]
+  ($ "div" {:class "fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+            :on-click on-close}
+     ($ "div" {:class "w-full max-w-sm"
+               :on-click (fn [e] (.stopPropagation e))}
+        ($ wrapped-profile-card {:name name
+                                 :profile profile
+                                 :show-quiz-rank? show-quiz-rank?
+                                 :quiz-rank quiz-rank
+                                 :is-winner? is-winner?
+                                 :on-close on-close}))))
+
+;; Profile viewer - shows user's own profile based on selected name
+(defn wrapped-profile-selector [{:keys [show-avatar? is-last?]}]
+  (let [[fullscreen? set-fullscreen!] (useState false)
+        my-name (:my-name @state)
+        profile (get wrapped-profiles my-name)
+        photo-url (get profile-photos my-name)
+        sorted-scores (get-sorted-scores)
+        quiz-finished? (>= (:message-index @state) (- total-steps 1))
+        quiz-rank (when quiz-finished?
+                    (let [idx (->> sorted-scores
+                                   (map-indexed vector)
+                                   (filter #(= (:name (second %)) my-name))
+                                   first)]
+                      (when idx (inc (first idx)))))
+        winner-name (when quiz-finished? (:name (first sorted-scores)))
+        is-winner? (= my-name winner-name)]
+    ($ "div" {:class "py-2 pl-10"}
+       (if (and my-name profile)
+         ;; Show their profile card with tap to fullscreen
+         ($ "div" {}
+            ($ "div" {:class "text-gray-300 text-sm mb-3"} "Tap to view fullscreen:")
+            ($ "div" {:class "cursor-pointer"
+                      :on-click #(set-fullscreen! true)}
+               ($ wrapped-profile-card {:name my-name
+                                        :profile profile
+                                        :show-quiz-rank? quiz-finished?
+                                        :quiz-rank quiz-rank
+                                        :is-winner? is-winner?})))
+         ;; Fallback if no name selected
+         ($ "div" {:class "text-gray-400 text-sm italic"}
+            "Select your name above to see your Wrapped profile"))
+       ;; Fullscreen modal
+       (when fullscreen?
+         ($ profile-fullscreen {:name my-name
+                                :profile profile
+                                :show-quiz-rank? quiz-finished?
+                                :quiz-rank quiz-rank
+                                :is-winner? is-winner?
+                                :on-close #(set-fullscreen! false)})))))
+
+;; Wrapped intro message
+(defn wrapped-intro [{:keys [show-avatar?]}]
+  ($ "div" {:class "flex items-end gap-2 mb-0.5"}
+     ($ "div" {:class "w-8 shrink-0"}
+        ($ "div" {:class (avatar-class show-avatar?)} "W"))
+     ($ "div" {:class "min-w-0"}
+        ($ "div" {:class "rounded-2xl px-4 py-3 bg-gradient-to-r from-purple-900/50 to-indigo-900/50 border border-purple-700/50"}
+           ($ "div" {:class "text-purple-200 font-semibold text-lg mb-1"} "Your Wrapped is Ready!")
+           ($ "div" {:class "text-gray-300 text-sm"} "It wouldn't be Wrapped if we didn't have a cool profile page")))))
+
 ;; Sender header
 (defn sender-header [{:keys [sender show-avatar?]}]
   ($ "div" {:class "flex items-end gap-2 mb-0.5 mt-3"}
@@ -1069,6 +1542,8 @@
       :holiday-collage ($ holiday-collage props)
       :reaction-ticker ($ reaction-ticker props)
       :text-with-reactions ($ text-with-reactions props)
+      :wrapped-intro ($ wrapped-intro props)
+      :wrapped-profiles ($ wrapped-profile-selector props)
       nil)))
 
 ;; Get messages to display based on message-index
@@ -1153,6 +1628,8 @@
                  :reaction-ticker "Reaction ticker"
                  :text-with-reactions (str (:content next-msg) " + reactions")
                  :user-message (str (:sender next-msg) ": " (:content next-msg))
+                 :wrapped-intro "Wrapped intro"
+                 :wrapped-profiles "Profile selector"
                  "...")))))))
 
 ;; Main UI
