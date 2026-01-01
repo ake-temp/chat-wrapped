@@ -1,6 +1,5 @@
 (ns talk.chat-quiz
   (:require ["./react_helper.js" :as r :refer [$ useState useEffect useRef]]
-            ["qrcode" :as QRCode]
             [clojure.string :as str]))
 
 
@@ -1083,21 +1082,6 @@
            ($ "a" {:href content :target "_blank" :class "text-blue-400 hover:underline text-sm break-all"}
               content)))))
 
-;; Controller-only QR code message
-(defn controller-qr [{:keys [url]}]
-  (when is-controller?
-    (let [[qr-data set-qr-data!] (useState nil)]
-      (useEffect
-       (fn []
-         (-> (QRCode/toDataURL url #js {:width 256 :margin 1})
-             (.then #(set-qr-data! %))
-             (.catch #(js/console.error "QR code generation failed:" %)))
-         js/undefined)
-       #js [url])
-      ($ "div" {:class "flex flex-col items-center justify-center py-8"}
-         (when qr-data
-           ($ "img" {:src qr-data :class "rounded-lg mb-4"}))
-         ($ "p" {:class "text-gray-400 text-sm"} "Scan to join")))))
 
 ;; Standalone large emoji (no message box)
 ;; If sender is provided, shows user's avatar, otherwise shows Wrapped avatar
@@ -1826,8 +1810,6 @@
         msg-count (count messages)]
     ($ "div" {:id "messages-container" :class "flex-1 overflow-y-auto p-4 relative z-10"}
        ($ "div" {:class "relative z-10"}
-          (when is-controller?
-            ($ controller-qr {:url "https://blog.bythe.rocks/talk/chat-wrapped/"}))
           (.map (to-array (map-indexed vector messages))
                 (fn [[i msg]]
                   (let [is-last? (= i (dec msg-count))
