@@ -1831,26 +1831,24 @@
 ;; Controller panel
 (defn controller-panel []
   (let [idx (:message-index @state)
-        total total-steps
-        next-msg (get-next-step-message idx)]
-    ($ "div" {:class "p-4 bg-[#1c1c1d] border-t border-gray-800 pb-safe shrink-0 relative z-10"}
-       ($ "div" {:class "flex items-center justify-between mb-3"}
-          ($ "div" {:class "flex items-center gap-2"}
-             ($ "span" {:class "text-gray-400 text-sm"} idx " / " total)
-             ($ "button" {:class "px-3 py-1.5 bg-gray-700 text-gray-300 rounded text-sm hover:bg-gray-600"
+        total total-steps]
+    ($ "div" {:class "px-3 pt-2 pb-4 bg-[#1c1c1d] border-t border-gray-800 pb-safe shrink-0 relative z-10"}
+       ($ "div" {:class "flex items-center justify-between"}
+          ($ "span" {:class "text-gray-400 text-xs shrink-0"} idx " / " total)
+          ($ "div" {:class "flex items-center gap-1.5"}
+             ($ "button" {:class "px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs hover:bg-gray-600"
                           :disabled (zero? idx)
                           :on-click skip-to-top!}
-                "⬆ Top")
-             ($ "button" {:class "px-3 py-1.5 bg-gray-700 text-gray-300 rounded text-sm hover:bg-gray-600"
+                "↑ Top")
+             ($ "button" {:class "px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs hover:bg-gray-600"
                           :disabled (>= idx total)
                           :on-click skip-to-bottom!}
-                "⬇ Bottom"))
-          ($ "div" {:class "flex gap-2"}
-             ($ "button" {:class "px-4 py-2 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-500 disabled:bg-gray-700 disabled:text-gray-500"
+                "↓ Bottom")
+             ($ "button" {:class "px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-500"
                           :disabled (zero? idx)
                           :on-click go-back-message!}
                 "← Back")
-             ($ "button" {:class "px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-600"
+             ($ "button" {:class "px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 disabled:bg-gray-600"
                           :disabled (>= idx total)
                           :on-click post-next-message!}
                 "Next →"))))))
