@@ -18,158 +18,169 @@
    "Retrospectre" "Samir" "Jaspreet" "Liam" "Georgia" "Mariana"
    "Jack McMillan" "Alice" "Jess" "Aidan"])
 
-;; Static quiz answers - simulates what participants answered
+;; Real quiz answers from live session
+;; Client ID -> Name mapping (update names once identified):
+;; Player 1 (11 pts): 1767213434253-781069
+;; Player 2 (11 pts): 1767213444853-804932
+;; Player 3 (11 pts): 1767213422567-842519
+;; Player 4 (11 pts): 1767213449507-526339
+;; Player 5 (10 pts): 1767213447890-794511
+;; Player 6 (10 pts): 1767213422814-439619
+;; Player 7 (9 pts): 1767213452264-130133
+;; Player 8 (9 pts): 1767213423557-952555
+;; Player 9 (8 pts): 1767213562049-414570
+;; Player 10 (6 pts): 1767213466512-641167
 (def static-quiz-answers
-  {"q1-messages" {"jack-c" "Jack Crowson"
-                  "jack-r" "Jack Rowland"
-                  "james" "Jack Crowson"
-                  "zack" "James"
-                  "lee" "Jack Crowson"
-                  "oliver" "Jack Crowson"
-                  "retro" "Jack Rowland"
-                  "samir" "Jack Crowson"
-                  "jaspreet" "Jack Rowland"
-                  "liam" "Jack Crowson"}
-   "q2-sticker" {"jack-c" "💛"
-                 "jack-r" "😭🤦"
-                 "james" "💛"
-                 "zack" "🤣"
-                 "lee" "💛"
-                 "oliver" "😅"
-                 "retro" "💛"
-                 "samir" "🤣"
-                 "jaspreet" "😭🤦"
-                 "liam" "💛"}
-   "q3-gap" {"jack-c" "45 hours"
-             "jack-r" "45 hours"
-             "james" "22 hours"
-             "zack" "45 hours"
-             "lee" "83 hours"
-             "oliver" "45 hours"
-             "retro" "22 hours"
-             "samir" "45 hours"
-             "jaspreet" "22 hours"
-             "liam" "45 hours"}
-   "q4-emoji1" {"jack-c" "Oliver"
-                "jack-r" "Zack"
-                "james" "Oliver"
-                "zack" "Oliver"
-                "lee" "Oliver"
-                "oliver" "Zack"
-                "retro" "Oliver"
-                "samir" "Oliver"
-                "jaspreet" "Retrospectre"
-                "liam" "Oliver"}
-   "q5-emoji2" {"jack-c" "Zack"
-                "jack-r" "Zack"
-                "james" "Oliver"
-                "zack" "Zack"
-                "lee" "Zack"
-                "oliver" "Zack"
-                "retro" "Zack"
-                "samir" "Zack"
-                "jaspreet" "James"
-                "liam" "Zack"}
-   "q6-emoji3" {"jack-c" "Retrospectre"
-                "jack-r" "James"
-                "james" "Retrospectre"
-                "zack" "Retrospectre"
-                "lee" "Retrospectre"
-                "oliver" "Retrospectre"
-                "retro" "Retrospectre"
-                "samir" "Zack"
-                "jaspreet" "Retrospectre"
-                "liam" "James"}
-   "q7-emoji4" {"jack-c" "Jaspreet"
-                "jack-r" "Samir"
-                "james" "Jaspreet"
-                "zack" "Jaspreet"
-                "lee" "Liam"
-                "oliver" "Jaspreet"
-                "retro" "Jaspreet"
-                "samir" "Jaspreet"
-                "jaspreet" "Jaspreet"
-                "liam" "Jaspreet"}
-   "q8-phrase1" {"jack-c" "Jack R"
-                 "jack-r" "Jack R"
-                 "james" "Jack C"
-                 "zack" "Jack R"
-                 "lee" "James"
-                 "oliver" "Jack R"
-                 "retro" "Jack R"
-                 "samir" "Jack R"
-                 "jaspreet" "Jack R"
-                 "liam" "Jack C"}
-   "q9-phrase2" {"jack-c" "Samir"
-                 "jack-r" "Samir"
-                 "james" "Liam"
-                 "zack" "Samir"
-                 "lee" "Samir"
-                 "oliver" "Samir"
-                 "retro" "Oliver"
-                 "samir" "Samir"
-                 "jaspreet" "Samir"
-                 "liam" "Samir"}
-   "q10-phrase3" {"jack-c" "James"
-                  "jack-r" "James"
-                  "james" "James"
-                  "zack" "Zack"
-                  "lee" "James"
-                  "oliver" "James"
-                  "retro" "James"
-                  "samir" "James"
-                  "jaspreet" "James"
-                  "liam" "Oliver"}
-   "q11-phrase4" {"jack-c" "Liam"
-                  "jack-r" "Retrospectre"
-                  "james" "Liam"
-                  "zack" "James"
-                  "lee" "Liam"
-                  "oliver" "Retrospectre"
-                  "retro" "Liam"
-                  "samir" "Liam"
-                  "jaspreet" "Liam"
-                  "liam" "Liam"}
-   "q12-event1" {"jack-c" "Gamestop"
-                 "jack-r" "Gamestop"
-                 "james" "Gamestop"
-                 "zack" "Gamestop"
-                 "lee" "A Wedding"
-                 "oliver" "Gamestop"
-                 "retro" "Gamestop"
-                 "samir" "Gamestop"
-                 "jaspreet" "A YuGiOh tournament"
-                 "liam" "Gamestop"}
-   "q13-event2" {"jack-c" "A YuGiOh Tournament"
-                 "jack-r" "A YuGiOh Tournament"
-                 "james" "The birth of a child"
-                 "zack" "A YuGiOh Tournament"
-                 "lee" "A Wedding"
-                 "oliver" "A YuGiOh Tournament"
-                 "retro" "Gamestop (again)"
-                 "samir" "A YuGiOh Tournament"
-                 "jaspreet" "A YuGiOh Tournament"
-                 "liam" "A YuGiOh Tournament"}
-   "q14-event3" {"jack-c" "Holiday Photos"
-                 "jack-r" "Holiday Photos"
-                 "james" "A Wedding"
-                 "zack" "Holiday Photos"
-                 "lee" "MTG Cards"
-                 "oliver" "Holiday Photos"
-                 "retro" "A Wedding"
-                 "samir" "Holiday Photos"
-                 "jaspreet" "Holiday Photos"
-                 "liam" "The birth of a child"}
-   "q15-event4" {"jack-c" "The birth of a child"
-                 "jack-r" "The birth of a child"
-                 "james" "The birth of a child"
-                 "zack" "Toil posting"
-                 "lee" "The birth of a child"
-                 "oliver" "A Wedding"
-                 "retro" "The birth of a child"
-                 "samir" "The birth of a child"
-                 "jaspreet" "The birth of a child"
-                 "liam" "The birth of a child"}})
+  {"q1-messages" {"1767213452264-130133" "Jack Crowson"
+                  "1767213562049-414570" "Jack Crowson"
+                  "1767213434253-781069" "Jack Crowson"
+                  "1767213423557-952555" "Jack Rowland"
+                  "1767213444853-804932" "Jack Crowson"
+                  "1767213466512-641167" "Jack Crowson"
+                  "1767213422567-842519" "Jack Crowson"
+                  "1767213447890-794511" "Jack Crowson"
+                  "1767213449507-526339" "Jack Crowson"
+                  "1767213422814-439619" "Jack Crowson"}
+   "q2-sticker" {"1767213444853-804932" "💛"
+                 "1767213562049-414570" "💛"
+                 "1767213422567-842519" "💛"
+                 "1767213423557-952555" "💛"
+                 "1767213447890-794511" "💛"
+                 "1767213466512-641167" "💛"
+                 "1767213452264-130133" "💛"
+                 "1767213422814-439619" "💛"
+                 "1767213449507-526339" "💛"
+                 "1767213434253-781069" "💛"}
+   "q3-gap" {"1767213422567-842519" "45 hours"
+             "1767213423557-952555" "45 hours"
+             "1767213466512-641167" "22 hours"
+             "1767213452264-130133" "22 hours"
+             "1767213434253-781069" "45 hours"
+             "1767213444853-804932" "45 hours"
+             "1767213449507-526339" "45 hours"
+             "1767213447890-794511" "45 hours"
+             "1767213562049-414570" "45 hours"
+             "1767213422814-439619" "22 hours"}
+   "q4-emoji1" {"1767213422814-439619" "Zack"
+                "1767213423557-952555" "Zack"
+                "1767213422567-842519" "Retrospectre"
+                "1767213466512-641167" "Zack"
+                "1767213444853-804932" "Lee"
+                "1767213562049-414570" "Samir"
+                "1767213447890-794511" "Samir"
+                "1767213449507-526339" "Oliver"
+                "1767213434253-781069" "Jaspreet"
+                "1767213452264-130133" "Liam"}
+   "q5-emoji2" {"1767213444853-804932" "Lee"
+                "1767213452264-130133" "Zack"
+                "1767213422814-439619" "Zack"
+                "1767213449507-526339" "Lee"
+                "1767213423557-952555" "Lee"
+                "1767213434253-781069" "Zack"
+                "1767213466512-641167" "Zack"
+                "1767213562049-414570" "Lee"
+                "1767213447890-794511" "Oliver"
+                "1767213422567-842519" "Jaspreet"}
+   "q6-emoji3" {"1767213434253-781069" "Jack C"
+                "1767213444853-804932" "Retrospectre"
+                "1767213423557-952555" "Jack C"
+                "1767213422814-439619" "Retrospectre"
+                "1767213422567-842519" "Retrospectre"
+                "1767213447890-794511" "Jack C"
+                "1767213466512-641167" "Jack C"
+                "1767213449507-526339" "Jack C"
+                "1767213562049-414570" "Liam"
+                "1767213452264-130133" "Liam"}
+   "q7-emoji4" {"1767213444853-804932" "Jaspreet"
+                "1767213562049-414570" "Jaspreet"
+                "1767213423557-952555" "Jaspreet"
+                "1767213466512-641167" "Jack R"
+                "1767213434253-781069" "Jaspreet"
+                "1767213452264-130133" "Jaspreet"
+                "1767213449507-526339" "Jaspreet"
+                "1767213447890-794511" "Jaspreet"
+                "1767213422814-439619" "Jaspreet"
+                "1767213422567-842519" "Lee"}
+   "q8-phrase1" {"1767213444853-804932" "Jack R"
+                 "1767213422567-842519" "Jack R"
+                 "1767213449507-526339" "Jack R"
+                 "1767213422814-439619" "Jack R"
+                 "1767213452264-130133" "Jack R"
+                 "1767213466512-641167" "Jack C"
+                 "1767213447890-794511" "Jack R"
+                 "1767213423557-952555" "Jack R"
+                 "1767213562049-414570" "Jack R"
+                 "1767213434253-781069" "Jack R"}
+   "q9-phrase2" {"1767213444853-804932" "Samir"
+                 "1767213423557-952555" "Samir"
+                 "1767213422567-842519" "Samir"
+                 "1767213449507-526339" "Samir"
+                 "1767213434253-781069" "Samir"
+                 "1767213422814-439619" "Samir"
+                 "1767213466512-641167" "Oliver"
+                 "1767213562049-414570" "Samir"
+                 "1767213452264-130133" "Samir"
+                 "1767213447890-794511" "Samir"}
+   "q10-phrase3" {"1767213422567-842519" "James"
+                  "1767213423557-952555" "James"
+                  "1767213466512-641167" "Retrospectre"
+                  "1767213562049-414570" "Jack C"
+                  "1767213434253-781069" "James"
+                  "1767213444853-804932" "Retrospectre"
+                  "1767213452264-130133" "Jack C"
+                  "1767213449507-526339" "James"
+                  "1767213447890-794511" "James"
+                  "1767213422814-439619" "James"}
+   "q11-phrase4" {"1767213452264-130133" "Retrospectre"
+                  "1767213466512-641167" "Retrospectre"
+                  "1767213447890-794511" "Jack C"
+                  "1767213562049-414570" "Liam"
+                  "1767213422567-842519" "Lee"
+                  "1767213423557-952555" "Jack C"
+                  "1767213444853-804932" "Liam"
+                  "1767213449507-526339" "Jack C"
+                  "1767213434253-781069" "Jack C"
+                  "1767213422814-439619" "Lee"}
+   "q12-event1" {"1767213466512-641167" "Gamestop"
+                 "1767213423557-952555" "Gamestop"
+                 "1767213422567-842519" "Gamestop"
+                 "1767213449507-526339" "Gamestop"
+                 "1767213562049-414570" "A YuGiOh tournament"
+                 "1767213422814-439619" "A YuGiOh tournament"
+                 "1767213452264-130133" "Gamestop"
+                 "1767213447890-794511" "Gamestop"
+                 "1767213444853-804932" "Gamestop"
+                 "1767213434253-781069" "A YuGiOh tournament"}
+   "q13-event2" {"1767213466512-641167" "A YuGiOh Tournament"
+                 "1767213422567-842519" "A YuGiOh Tournament"
+                 "1767213422814-439619" "A YuGiOh Tournament"
+                 "1767213423557-952555" "A YuGiOh Tournament"
+                 "1767213449507-526339" "A YuGiOh Tournament"
+                 "1767213434253-781069" "A YuGiOh Tournament"
+                 "1767213444853-804932" "A YuGiOh Tournament"
+                 "1767213452264-130133" "A YuGiOh Tournament"
+                 "1767213562049-414570" "The birth of a child"
+                 "1767213447890-794511" "A YuGiOh Tournament"}
+   "q14-event3" {"1767213447890-794511" "MTG Cards"
+                 "1767213422814-439619" "MTG Cards"
+                 "1767213562049-414570" "MTG Cards"
+                 "1767213449507-526339" "MTG Cards"
+                 "1767213422567-842519" "Holiday Photos"
+                 "1767213434253-781069" "Holiday Photos"
+                 "1767213452264-130133" "MTG Cards"
+                 "1767213423557-952555" "MTG Cards"
+                 "1767213444853-804932" "MTG Cards"
+                 "1767213466512-641167" "MTG Cards"}
+   "q15-event4" {"1767213447890-794511" "The birth of a child"
+                 "1767213423557-952555" "The birth of a child"
+                 "1767213422567-842519" "The birth of a child"
+                 "1767213449507-526339" "The birth of a child"
+                 "1767213422814-439619" "The birth of a child"
+                 "1767213434253-781069" "The birth of a child"
+                 "1767213466512-641167" "The birth of a child"
+                 "1767213452264-130133" "The birth of a child"
+                 "1767213562049-414570" "The birth of a child"
+                 "1767213444853-804932" "The birth of a child"}})
 
 ;; Wrapped profile data from vibe.md analysis
 (def wrapped-profiles
@@ -856,21 +867,23 @@
 
 ;; >> State
 
-;; Static participants derived from static quiz answers
+;; Static participants - real client IDs mapped to names
+;; Tell me which names to swap once you see the UI
 (def static-participants
   (into {}
     (map (fn [[client-id name]]
            [client-id {:name name :client-id client-id}])
-         {"jack-c" "Jack Crowson"
-          "jack-r" "Jack Rowland"
-          "james" "James"
-          "zack" "Zack"
-          "lee" "Lee"
-          "oliver" "Oliver"
-          "retro" "Retrospectre"
-          "samir" "Samir"
-          "jaspreet" "Jaspreet"
-          "liam" "Liam"})))
+         {"1767213434253-781069" "Jack Crowson"   ;; 11 pts
+          "1767213444853-804932" "Jack Rowland"   ;; 11 pts
+          "1767213422567-842519" "James"          ;; 11 pts
+          "1767213449507-526339" "Zack"           ;; 11 pts
+          "1767213447890-794511" "Jess"            ;; 10 pts
+          "1767213422814-439619" "Jaspreet"       ;; 10 pts
+          "1767213452264-130133" "Liam"           ;; 9 pts
+          "1767213423557-952555" "Alice"          ;; 9 pts
+          "1767213562049-414570" "Mariana"        ;; 8 pts
+          "1767213466512-641167" "Georgia"        ;; 6 pts
+          })))
 
 (def default-state
   {:message-index 0
