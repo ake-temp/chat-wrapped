@@ -1837,35 +1837,7 @@
              ($ "button" {:class "px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-600"
                           :disabled (>= idx total)
                           :on-click post-next-message!}
-                "Next →")))
-       (when next-msg
-         ($ "div" {:class "p-3 bg-gray-800/50 rounded-lg border border-gray-700"}
-            ($ "div" {:class "text-xs text-gray-500 mb-1"} "Next:")
-            ($ "div" {:class "text-sm text-gray-300 truncate"}
-               (case (:type next-msg)
-                 :sender-header (str "Header: " (:sender next-msg))
-                 :user-header (str "User: " (:sender next-msg))
-                 :text (:content next-msg)
-                 :emoji (str "Emoji: " (:content next-msg))
-                 :buttons (str "Buttons: " (str/join ", " (take 3 (:options next-msg))) "...")
-                 :input "Number input"
-                 :reveal (str "Reveal: " (:answer next-msg))
-                 :scores "Scores"
-                 :link (:content next-msg)
-                 :name-select "Name selection"
-                 :message-counter "Message counter animation"
-                 :purge-graph "Purge graph"
-                 :word-rotation "Word rotation"
-                 :sticker-cloud "Sticker cloud"
-                 :photo-collage "Photo collage"
-                 :holiday-collage "Holiday collage"
-                 :reaction-ticker "Reaction ticker"
-                 :text-with-reactions (str (:content next-msg) " + reactions")
-                 :user-message (str (:sender next-msg) ": " (:content next-msg))
-                 :wrapped-intro "Wrapped intro"
-                 :wrapped-profiles "Profile selector"
-                 :wrapped-gallery "Profile gallery"
-                 "...")))))))
+                "Next →"))))))
 
 ;; Main UI
 (defn chat-quiz-ui []
