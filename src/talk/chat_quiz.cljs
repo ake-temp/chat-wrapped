@@ -1,17 +1,11 @@
 (ns talk.chat-quiz
-  (:require ["./ably.js" :as ably]
-            ["./ui.js" :as ui]
-            ["./react_helper.js" :as r :refer [$ useState useEffect useRef]]
+  (:require ["./react_helper.js" :as r :refer [$ useState useEffect useRef]]
             ["qrcode" :as QRCode]
             [clojure.string :as str]))
 
 
 
 ;; >> Configuration
-
-(def CHANNEL "chat-quiz")
-(def QUIZ-CHANNEL "chat-quiz-answers")
-(def RESET-CHANNEL "chat-quiz-reset")
 
 ;; Detect base path from URL at runtime (strip trailing slash)
 (def base-path
@@ -24,6 +18,159 @@
   ["Jack Crowson" "Jack Rowland" "James" "Zack" "Lee" "Oliver"
    "Retrospectre" "Samir" "Jaspreet" "Liam" "Georgia" "Mariana"
    "Jack McMillan" "Alice" "Jess" "Aidan"])
+
+;; Static quiz answers - simulates what participants answered
+(def static-quiz-answers
+  {"q1-messages" {"jack-c" "Jack Crowson"
+                  "jack-r" "Jack Rowland"
+                  "james" "Jack Crowson"
+                  "zack" "James"
+                  "lee" "Jack Crowson"
+                  "oliver" "Jack Crowson"
+                  "retro" "Jack Rowland"
+                  "samir" "Jack Crowson"
+                  "jaspreet" "Jack Rowland"
+                  "liam" "Jack Crowson"}
+   "q2-sticker" {"jack-c" "💛"
+                 "jack-r" "😭🤦"
+                 "james" "💛"
+                 "zack" "🤣"
+                 "lee" "💛"
+                 "oliver" "😅"
+                 "retro" "💛"
+                 "samir" "🤣"
+                 "jaspreet" "😭🤦"
+                 "liam" "💛"}
+   "q3-gap" {"jack-c" "45 hours"
+             "jack-r" "45 hours"
+             "james" "22 hours"
+             "zack" "45 hours"
+             "lee" "83 hours"
+             "oliver" "45 hours"
+             "retro" "22 hours"
+             "samir" "45 hours"
+             "jaspreet" "22 hours"
+             "liam" "45 hours"}
+   "q4-emoji1" {"jack-c" "Oliver"
+                "jack-r" "Zack"
+                "james" "Oliver"
+                "zack" "Oliver"
+                "lee" "Oliver"
+                "oliver" "Zack"
+                "retro" "Oliver"
+                "samir" "Oliver"
+                "jaspreet" "Retrospectre"
+                "liam" "Oliver"}
+   "q5-emoji2" {"jack-c" "Zack"
+                "jack-r" "Zack"
+                "james" "Oliver"
+                "zack" "Zack"
+                "lee" "Zack"
+                "oliver" "Zack"
+                "retro" "Zack"
+                "samir" "Zack"
+                "jaspreet" "James"
+                "liam" "Zack"}
+   "q6-emoji3" {"jack-c" "Retrospectre"
+                "jack-r" "James"
+                "james" "Retrospectre"
+                "zack" "Retrospectre"
+                "lee" "Retrospectre"
+                "oliver" "Retrospectre"
+                "retro" "Retrospectre"
+                "samir" "Zack"
+                "jaspreet" "Retrospectre"
+                "liam" "James"}
+   "q7-emoji4" {"jack-c" "Jaspreet"
+                "jack-r" "Samir"
+                "james" "Jaspreet"
+                "zack" "Jaspreet"
+                "lee" "Liam"
+                "oliver" "Jaspreet"
+                "retro" "Jaspreet"
+                "samir" "Jaspreet"
+                "jaspreet" "Jaspreet"
+                "liam" "Jaspreet"}
+   "q8-phrase1" {"jack-c" "Jack R"
+                 "jack-r" "Jack R"
+                 "james" "Jack C"
+                 "zack" "Jack R"
+                 "lee" "James"
+                 "oliver" "Jack R"
+                 "retro" "Jack R"
+                 "samir" "Jack R"
+                 "jaspreet" "Jack R"
+                 "liam" "Jack C"}
+   "q9-phrase2" {"jack-c" "Samir"
+                 "jack-r" "Samir"
+                 "james" "Liam"
+                 "zack" "Samir"
+                 "lee" "Samir"
+                 "oliver" "Samir"
+                 "retro" "Oliver"
+                 "samir" "Samir"
+                 "jaspreet" "Samir"
+                 "liam" "Samir"}
+   "q10-phrase3" {"jack-c" "James"
+                  "jack-r" "James"
+                  "james" "James"
+                  "zack" "Zack"
+                  "lee" "James"
+                  "oliver" "James"
+                  "retro" "James"
+                  "samir" "James"
+                  "jaspreet" "James"
+                  "liam" "Oliver"}
+   "q11-phrase4" {"jack-c" "Liam"
+                  "jack-r" "Retrospectre"
+                  "james" "Liam"
+                  "zack" "James"
+                  "lee" "Liam"
+                  "oliver" "Retrospectre"
+                  "retro" "Liam"
+                  "samir" "Liam"
+                  "jaspreet" "Liam"
+                  "liam" "Liam"}
+   "q12-event1" {"jack-c" "Gamestop"
+                 "jack-r" "Gamestop"
+                 "james" "Gamestop"
+                 "zack" "Gamestop"
+                 "lee" "A Wedding"
+                 "oliver" "Gamestop"
+                 "retro" "Gamestop"
+                 "samir" "Gamestop"
+                 "jaspreet" "A YuGiOh tournament"
+                 "liam" "Gamestop"}
+   "q13-event2" {"jack-c" "A YuGiOh Tournament"
+                 "jack-r" "A YuGiOh Tournament"
+                 "james" "The birth of a child"
+                 "zack" "A YuGiOh Tournament"
+                 "lee" "A Wedding"
+                 "oliver" "A YuGiOh Tournament"
+                 "retro" "Gamestop (again)"
+                 "samir" "A YuGiOh Tournament"
+                 "jaspreet" "A YuGiOh Tournament"
+                 "liam" "A YuGiOh Tournament"}
+   "q14-event3" {"jack-c" "Holiday Photos"
+                 "jack-r" "Holiday Photos"
+                 "james" "A Wedding"
+                 "zack" "Holiday Photos"
+                 "lee" "MTG Cards"
+                 "oliver" "Holiday Photos"
+                 "retro" "A Wedding"
+                 "samir" "Holiday Photos"
+                 "jaspreet" "Holiday Photos"
+                 "liam" "The birth of a child"}
+   "q15-event4" {"jack-c" "The birth of a child"
+                 "jack-r" "The birth of a child"
+                 "james" "The birth of a child"
+                 "zack" "Toil posting"
+                 "lee" "The birth of a child"
+                 "oliver" "A Wedding"
+                 "retro" "The birth of a child"
+                 "samir" "The birth of a child"
+                 "jaspreet" "The birth of a child"
+                 "liam" "The birth of a child"}})
 
 ;; Wrapped profile data from vibe.md analysis
 (def wrapped-profiles
@@ -708,22 +855,40 @@
 
 ;; >> State
 
-;; Controller mode determined by URL param - not stored in state
-(def is-controller?
-  (let [params (js/URLSearchParams. (.-search js/location))]
-    (some? (.get params "control"))))
+;; Simple client ID for current user (used for tracking selected name)
+(def client-id
+  (or (js/localStorage.getItem "chat-quiz-client-id")
+      (let [id (str "user-" (random-uuid))]
+        (js/localStorage.setItem "chat-quiz-client-id" id)
+        id)))
+
+;; Static participants derived from static quiz answers
+(def static-participants
+  (into {}
+    (map (fn [[client-id name]]
+           [client-id {:name name :client-id client-id}])
+         {"jack-c" "Jack Crowson"
+          "jack-r" "Jack Rowland"
+          "james" "James"
+          "zack" "Zack"
+          "lee" "Lee"
+          "oliver" "Oliver"
+          "retro" "Retrospectre"
+          "samir" "Samir"
+          "jaspreet" "Jaspreet"
+          "liam" "Liam"})))
 
 (def default-state
   {:message-index 0
-   :all-answers {}
+   :all-answers static-quiz-answers  ;; Use static answers instead of empty
    :scores {}
-   :participants {}
+   :participants static-participants  ;; Use static participants
    :my-name nil
    :name-submitted? false})
 
 (defn save-state! []
   (js/localStorage.setItem "chat-quiz-state"
-    (js/JSON.stringify (select-keys @state [:my-name :name-submitted? :message-index :all-answers]))))
+    (js/JSON.stringify (select-keys @state [:my-name :name-submitted? :message-index]))))
 
 (defn load-state []
   (when-let [saved (js/localStorage.getItem "chat-quiz-state")]
@@ -734,11 +899,6 @@
 (defn reset-state! []
   (js/localStorage.removeItem "chat-quiz-state")
   (reset! state default-state))
-
-(defn broadcast-reset! []
-  (when (js/confirm "Reset quiz for all participants?")
-    (ably/publish! RESET-CHANNEL "reset" {:timestamp (js/Date.now)})
-    (reset-state!)))
 
 
 
@@ -841,33 +1001,18 @@
 
 ;; >> Answer Processing
 
+;; Get answer for current selected user
 (defn my-answer [question-id]
-  (get-in @state [:all-answers question-id ably/client-id]))
-
-(defn submit-answer! [question-id answer]
-  (swap! state #(-> %
-                    (assoc-in [:all-answers question-id ably/client-id] answer)
-                    (assoc :last-update (js/Date.now))))
-  (save-state!)
-  (ably/publish! QUIZ-CHANNEL "answer"
-    {:client-id ably/client-id
-     :question-id question-id
-     :answer answer
-     :timestamp (js/Date.now)}))
-
-(defn process-answer [data]
-  (let [{:keys [client-id question-id answer]} data]
-    ;; Single swap: update answer and recalculate scores together
-    (swap! state (fn [s]
-                   (let [new-answers (assoc-in (:all-answers s) [question-id client-id] answer)]
-                     (-> s
-                         (assoc :all-answers new-answers)
-                         (assoc :scores (calculate-all-scores (:participants s) new-answers))))))
-    (save-state!)))
+  (when-let [my-name (:my-name @state)]
+    ;; Find the client-id for the selected name
+    (when-let [my-client-id (some (fn [[cid data]]
+                                     (when (= (:name data) my-name) cid))
+                                   (:participants @state))]
+      (get-in @state [:all-answers question-id my-client-id]))))
 
 
 
-;; >> Controller Functions
+;; >> Navigation Functions
 
 (defn set-message-index! [idx]
   (swap! state assoc :message-index idx)
@@ -878,19 +1023,19 @@
         total (count quiz-messages)
         new-idx (inc idx)]
     (when (<= new-idx total)
-      (ably/publish! CHANNEL "index" {:index new-idx})
       (set-message-index! new-idx))))
 
 (defn go-back-message! []
   (let [idx (:message-index @state)
         new-idx (dec idx)]
     (when (>= new-idx 0)
-      (ably/publish! CHANNEL "index" {:index new-idx})
       (set-message-index! new-idx))))
 
-(defn process-message [data]
-  (let [{:keys [index]} data]
-    (set-message-index! index)))
+(defn skip-to-top! []
+  (set-message-index! 0))
+
+(defn skip-to-bottom! []
+  (set-message-index! (count quiz-messages)))
 
 
 
@@ -1263,11 +1408,9 @@
               ($ "span" {} "Selected: " my-name " · Tap to change")
               ($ "span" {} "Welcome, " my-name "!")))))))
 
-;; Button grid for answers
+;; Button grid for answers (display-only, no interaction)
 (defn button-grid [{:keys [id options labels is-last? current-answer show-photos]}]
-  (let [is-current? is-last?
-        locked? (not is-current?)
-        ;; Use passed current-answer or fetch fresh
+  (let [;; Use passed current-answer or fetch fresh
         current-answer (or current-answer (my-answer id))
         answer-count (count (get (:all-answers @state) id {}))
         option-pairs (map-indexed (fn [idx opt] {:option opt :label (or (get labels idx) opt)}) options)
@@ -1279,17 +1422,13 @@
                   (let [selected? (= current-answer option)
                         sticker-url (get sticker-images option)
                         photo-url (when show-photos (get profile-photos label))]
-                    ($ "button"
+                    ($ "div"
                        {:key option
-                        :class (str "rounded-xl text-sm font-medium transition-all "
+                        :class (str "rounded-xl text-sm font-medium "
                                     (if sticker-url "p-2 " "px-4 py-3 ")
                                     (if selected?
                                       "bg-blue-600 text-white"
-                                      (if (or locked? is-controller?)
-                                        "bg-[#242424] text-gray-400"
-                                        "bg-[#242424] text-white hover:bg-[#2f2f2f]")))
-                        :disabled (or locked? is-controller?)
-                        :on-click (fn [] (when-not (or locked? is-controller?) (submit-answer! id option)))}
+                                      "bg-[#242424] text-gray-400"))}
                        (cond
                          sticker-url
                          ($ "img" {:src sticker-url :class "w-12 h-12 object-contain"})
@@ -1304,12 +1443,11 @@
 
                          :else label))))))
        (when (some? current-answer)
-         ($ "div" {:class (str "text-center text-sm mt-2 " (if is-current? "text-blue-400" "text-green-400"))}
-            (if is-current? "Tap to change" "Answer submitted!")))
-       (when (or is-controller? (pos? answer-count))
-         (let [participant-count (count (:participants @state))]
-           ($ "div" {:class "text-center text-gray-500 text-sm mt-2"}
-              answer-count " / " participant-count " answered"))))))
+         ($ "div" {:class "text-center text-sm mt-2 text-blue-400"}
+            "Selected answer"))
+       (let [participant-count (count (:participants @state))]
+         ($ "div" {:class "text-center text-gray-500 text-sm mt-2"}
+            answer-count " / " participant-count " answered")))))
 
 ;; Number input
 (defn number-input [{:keys [id placeholder is-last? current-answer]}]
@@ -1714,20 +1852,25 @@
         next-msg (get-next-step-message idx)]
     ($ "div" {:class "p-4 bg-[#1c1c1d] border-t border-gray-800 pb-safe shrink-0 relative z-10"}
        ($ "div" {:class "flex items-center justify-between mb-3"}
-          ($ "div" {:class "flex items-center gap-3"}
+          ($ "div" {:class "flex items-center gap-2"}
              ($ "span" {:class "text-gray-400 text-sm"} idx " / " total)
-             ($ "button" {:class "px-3 py-1 bg-red-900 text-red-300 rounded text-sm hover:bg-red-800"
-                          :on-click broadcast-reset!}
-                "Reset"))
+             ($ "button" {:class "px-3 py-1.5 bg-gray-700 text-gray-300 rounded text-sm hover:bg-gray-600"
+                          :disabled (zero? idx)
+                          :on-click skip-to-top!}
+                "⬆ Top")
+             ($ "button" {:class "px-3 py-1.5 bg-gray-700 text-gray-300 rounded text-sm hover:bg-gray-600"
+                          :disabled (>= idx total)
+                          :on-click skip-to-bottom!}
+                "⬇ Bottom"))
           ($ "div" {:class "flex gap-2"}
              ($ "button" {:class "px-4 py-2 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-500 disabled:bg-gray-700 disabled:text-gray-500"
                           :disabled (zero? idx)
                           :on-click go-back-message!}
-                "Back")
+                "← Back")
              ($ "button" {:class "px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-600"
                           :disabled (>= idx total)
                           :on-click post-next-message!}
-                "Post")))
+                "Next →")))
        (when next-msg
          ($ "div" {:class "p-3 bg-gray-800/50 rounded-lg border border-gray-700"}
             ($ "div" {:class "text-xs text-gray-500 mb-1"} "Next:")
@@ -1766,46 +1909,16 @@
                        :filter "invert(1)"}})
      ($ header)
      ($ messages-area)
-     (when is-controller?
-       ($ controller-panel))
-     ($ ui/connection-pill)))
+     ($ controller-panel)))
 
 
 
 ;; >> Initialization
 
 (defn init! []
-  ;; Enter presence if name submitted
-  (when (:name-submitted? @state)
-    (ably/enter-presence! CHANNEL {:name (:my-name @state)}))
-
-  ;; Watch presence for participants
-  (ably/on-presence-change! CHANNEL
-    (fn []
-      (ably/get-presence-members CHANNEL
-        (fn [members]
-          (let [participants (reduce
-                               (fn [acc member]
-                                 (let [client-id (.-clientId member)
-                                       data (.-data member)]
-                                   (assoc acc client-id {:client-id client-id
-                                                         :name (:name data)})))
-                               {}
-                               members)]
-            ;; Single swap: update participants and recalculate scores together
-            (swap! state (fn [s]
-                           (-> s
-                               (assoc :participants participants)
-                               (assoc :scores (calculate-all-scores participants (:all-answers s)))))))))))
-
-  ;; Subscribe to messages
-  (ably/subscribe! CHANNEL process-message)
-
-  ;; Subscribe to answers
-  (ably/subscribe! QUIZ-CHANNEL process-answer)
-
-  ;; Subscribe to reset channel
-  (ably/subscribe! RESET-CHANNEL (fn [_] (reset-state!)))
+  ;; Calculate initial scores from static data
+  (swap! state (fn [s]
+                 (assoc s :scores (calculate-all-scores (:participants s) (:all-answers s)))))
 
   ;; Auto-scroll to bottom when message index changes
   (add-watch state ::auto-scroll

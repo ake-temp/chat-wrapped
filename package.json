@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "ably": "^2.15.0",
     "bun-plugin-tailwind": "^0.1.2",
     "qrcode": "^1.5.4",
     "react": "^19.1.0",
