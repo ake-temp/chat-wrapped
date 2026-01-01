@@ -854,13 +854,6 @@
 
 ;; >> State
 
-;; Simple client ID for current user (used for tracking selected name)
-(def client-id
-  (or (js/localStorage.getItem "chat-quiz-client-id")
-      (let [id (str "user-" (random-uuid))]
-        (js/localStorage.setItem "chat-quiz-client-id" id)
-        id)))
-
 ;; Static participants derived from static quiz answers
 (def static-participants
   (into {}
