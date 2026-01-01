@@ -1027,7 +1027,7 @@
   (set-message-index! 0))
 
 (defn skip-to-bottom! []
-  (set-message-index! (count quiz-messages)))
+  (set-message-index! total-steps))
 
 
 
