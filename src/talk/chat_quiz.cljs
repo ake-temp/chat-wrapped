@@ -682,7 +682,7 @@
    ;; Scores checkpoint
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :text :content "Let's check in with the scores so far:" :show-avatar true}
-   {:type :scores}
+   {:type :scores :questions ["q1-messages" "q2-sticker" "q3-gap"]}
 
    ;; ===== ROUND 2 =====
 
@@ -775,7 +775,9 @@
    ;; Scores checkpoint
    {:type :sender-header :sender "Wrapped" :batch-with-next true}
    {:type :text :content "Let's check in with scores now:" :show-avatar true}
-   {:type :scores}
+   {:type :scores :questions ["q1-messages" "q2-sticker" "q3-gap"
+                              "q4-emoji1" "q5-emoji2" "q6-emoji3" "q7-emoji4"
+                              "q8-phrase1" "q9-phrase2" "q10-phrase3" "q11-phrase4"]}
 
    ;; ===== ROUND 3 =====
 
@@ -929,65 +931,75 @@
 
 ;; >> Scoring
 
-;; Pure function - calculates score given answers map
-(defn calculate-score-for [all-answers client-id]
-  (reduce
-    (fn [score msg]
-      (if (and (= (:type msg) :reveal)
-               (= (get-in all-answers [(:id msg) client-id]) (:answer msg)))
-        (inc score)
-        score))
-    0
-    quiz-messages))
+;; Map of question-id -> correct answer for quick lookup
+(def question-answers
+  (->> quiz-messages
+       (filter #(= (:type %) :reveal))
+       (map (fn [msg] [(:id msg) (:answer msg)]))
+       (into {})))
 
-;; Pure function - calculates all scores
-(defn calculate-all-scores [participants all-answers]
+;; Calculate score for a participant, optionally limited to specific questions
+(defn calculate-score-for [all-answers client-id question-ids]
+  (let [questions (or question-ids (keys question-answers))]
+    (count (filter (fn [qid]
+                     (= (get-in all-answers [qid client-id])
+                        (get question-answers qid)))
+                   questions))))
+
+;; Calculate all scores, optionally limited to specific questions
+(defn calculate-all-scores [participants all-answers question-ids]
   (reduce
     (fn [scores [client-id _]]
-      (assoc scores client-id (calculate-score-for all-answers client-id)))
+      (assoc scores client-id (calculate-score-for all-answers client-id question-ids)))
     {}
     participants))
 
 ;; Convenience wrapper that reads from state
 (defn calculate-score [client-id]
-  (calculate-score-for (:all-answers @state) client-id))
+  (calculate-score-for (:all-answers @state) client-id nil))
 
-;; Updates scores in state (single swap)
+;; Updates scores in state (single swap) - uses all questions
 (defn update-all-scores! []
   (swap! state (fn [s]
-                 (assoc s :scores (calculate-all-scores (:participants s) (:all-answers s))))))
+                 (assoc s :scores (calculate-all-scores (:participants s) (:all-answers s) nil)))))
 
-(defn get-sorted-scores []
-  (let [scores (:scores @state)
-        participants (:participants @state)
-        sorted (->> scores
-                    (map (fn [[client-id score]]
-                           {:client-id client-id
-                            :name (get-in participants [client-id :name] "Unknown")
-                            :score score}))
-                    (sort-by :score >))]
-    ;; Add ranks with ties handling
-    (loop [remaining sorted
-           current-rank 1
-           prev-score nil
-           same-rank-count 0
-           result []]
-      (if (empty? remaining)
-        result
-        (let [entry (first remaining)
-              score (:score entry)
-              ;; If same score as previous, keep same rank; otherwise advance
-              new-rank (if (= score prev-score)
-                         current-rank
-                         (+ current-rank same-rank-count))
-              new-same-count (if (= score prev-score)
-                               (inc same-rank-count)
-                               1)]
-          (recur (rest remaining)
-                 new-rank
-                 score
-                 new-same-count
-                 (conj result (assoc entry :rank new-rank))))))))
+;; Helper to add ranks with ties handling
+(defn add-ranks [sorted-entries]
+  (loop [remaining sorted-entries
+         current-rank 1
+         prev-score nil
+         same-rank-count 0
+         result []]
+    (if (empty? remaining)
+      result
+      (let [entry (first remaining)
+            score (:score entry)
+            new-rank (if (= score prev-score)
+                       current-rank
+                       (+ current-rank same-rank-count))
+            new-same-count (if (= score prev-score)
+                             (inc same-rank-count)
+                             1)]
+        (recur (rest remaining)
+               new-rank
+               score
+               new-same-count
+               (conj result (assoc entry :rank new-rank)))))))
+
+;; Get sorted scores, optionally limited to specific question IDs
+(defn get-sorted-scores
+  ([] (get-sorted-scores nil))
+  ([question-ids]
+   (let [participants (:participants @state)
+         all-answers (:all-answers @state)
+         scores (calculate-all-scores participants all-answers question-ids)
+         sorted (->> scores
+                     (map (fn [[client-id score]]
+                            {:client-id client-id
+                             :name (get-in participants [client-id :name] "Unknown")
+                             :score score}))
+                     (sort-by :score >))]
+     (add-ranks sorted))))
 
 
 
@@ -1491,18 +1503,9 @@
                                ($ "span" {:class "text-gray-400"} cnt))))))))))))
 
 ;; Scores display
-(defn scores-message [{:keys [final show-avatar? is-last?]}]
-  (let [live-scores (get-sorted-scores)
-        [snapshot set-snapshot!] (useState nil)
-        ;; Snapshot scores when this becomes visible (is-last?) for non-final scores
-        _ (useEffect
-            (fn []
-              (when (and is-last? (not final) (nil? snapshot))
-                (set-snapshot! live-scores))
-              js/undefined)
-            #js [is-last?])
-        ;; Use snapshot for intermediate scores, live for final
-        sorted-scores (if final live-scores (or snapshot live-scores))]
+(defn scores-message [{:keys [final show-avatar? questions]}]
+  ;; Use :questions list to limit which questions count, or nil for all (final)
+  (let [sorted-scores (get-sorted-scores (when-not final questions))]
     ($ "div" {:class "flex items-end gap-2 mb-0.5"}
        ($ "div" {:class "w-8 shrink-0"}
           ($ "div" {:class (avatar-class show-avatar?)} "W"))
