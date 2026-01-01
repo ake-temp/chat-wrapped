@@ -1372,15 +1372,14 @@
                         :class (str "flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all "
                                     (if is-selected?
                                       "bg-green-600 text-white"
-                                      (if (or locked? is-controller?)
+                                      (if locked?
                                         "bg-[#242424] text-gray-400"
                                         "bg-[#242424] text-white hover:bg-[#2f2f2f]")))
-                        :disabled (or locked? is-controller?)
+                        :disabled locked?
                         :on-click (fn []
-                                    (when-not (or locked? is-controller?)
+                                    (when-not locked?
                                       (swap! state assoc :my-name name :name-submitted? true)
-                                      (save-state!)
-                                      (ably/enter-presence! CHANNEL {:name name})))}
+                                      (save-state!)))}
                        (if photo-url
                          ($ "img" {:src photo-url :class "w-8 h-8 rounded-full object-cover"})
                          ($ "div" {:class "w-8 h-8 rounded-full bg-[#2f2f2f] flex items-center justify-center text-xs"}
@@ -1433,32 +1432,25 @@
          ($ "div" {:class "text-center text-gray-500 text-sm mt-2"}
             answer-count " / " participant-count " answered")))))
 
-;; Number input
+;; Number input (display-only)
 (defn number-input [{:keys [id placeholder is-last? current-answer]}]
-  (let [is-current? is-last?
-        input-answer (or current-answer (my-answer id))
+  (let [input-answer (or current-answer (my-answer id))
         submitted? (some? input-answer)
-        locked? (not is-current?)
         answer-count (count (get (:all-answers @state) id {}))]
     ($ "div" {:class "py-2 pl-10"}
        ($ "input" {:type "number"
                    :min 0
-                   :class "w-full px-4 py-3 rounded-xl bg-[#242424] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-xl"
+                   :class "w-full px-4 py-3 rounded-xl bg-[#242424] text-white placeholder-gray-400 text-center text-xl"
                    :placeholder placeholder
-                   :disabled (or locked? is-controller?)
-                   :default-value (or input-answer "")
-                   :on-change (fn [e]
-                                (when-not (or locked? is-controller?)
-                                  (let [value (js/parseInt (.. e -target -value))]
-                                    (when-not (js/isNaN value)
-                                      (submit-answer! id value)))))})
+                   :disabled true
+                   :value (or input-answer "")
+                   :read-only true})
        (when submitted?
-         ($ "div" {:class (str "text-center text-sm mt-2 " (if is-current? "text-blue-400" "text-green-400"))}
-            (if is-current? "Change your answer above" "Answer submitted!")))
-       (when (or is-controller? (pos? answer-count))
-         (let [participant-count (count (:participants @state))]
-           ($ "div" {:class "text-center text-gray-500 text-sm mt-2"}
-              answer-count " / " participant-count " answered"))))))
+         ($ "div" {:class "text-center text-sm mt-2 text-blue-400"}
+            "Selected answer"))
+       (let [participant-count (count (:participants @state))]
+         ($ "div" {:class "text-center text-gray-500 text-sm mt-2"}
+            answer-count " / " participant-count " answered")))))
 
 ;; Reveal answer
 (defn reveal-message [{:keys [id answer rankings text show-avatar?]}]
